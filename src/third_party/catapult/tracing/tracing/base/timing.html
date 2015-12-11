@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<!--
+Copyright (c) 2014 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<link rel="import" href="/tracing/base/base.html">
+
+<script>
+'use strict';
+
+tr.exportTo('tr.b', function() {
+  function Timing() {
+  }
+
+  Timing.markTimeBegin = function(functionName) {
+    if (tr.isHeadless)
+      return;
+    window.performance.mark(functionName + '_Begin');
+  };
+
+  Timing.markTimeEnd = function(functionName) {
+    if (tr.isHeadless)
+      return;
+    window.performance.mark(functionName + '_End');
+    window.performance.measure(functionName,
+                               functionName + '_Begin',
+                               functionName + '_End');
+  };
+
+  Timing.wrap = function(callback) {
+    if (callback.name === '')
+      throw new Error('Anonymous function is not allowed');
+    function timedFunction() {
+      Timing.markTimeBegin(callback.name);
+      try {
+        callback.apply(this, arguments);
+      } finally {
+        Timing.markTimeEnd(callback.name);
+      }
+    }
+    return timedFunction;
+  };
+
+  Timing.wrapNamedFunction = function(functionName, callback) {
+    function timedNamedFunction() {
+      Timing.markTimeBegin(functionName);
+      try {
+        callback.apply(this, arguments);
+      } finally {
+        Timing.markTimeEnd(functionName);
+      }
+    }
+    return timedNamedFunction;
+  };
+
+  function TimedNamedPromise(name, executor) {
+    Timing.markTimeBegin(name);
+    var promise = new Promise(executor);
+    promise.then(function(result) {
+      Timing.markTimeEnd(name);
+      return result;
+    }, function(e) {
+      Timing.markTimeEnd(name);
+      throw e;
+    });
+    return promise;
+  }
+
+  return {
+    TimedNamedPromise: TimedNamedPromise,
+    Timing: Timing
+  };
+});
+</script>

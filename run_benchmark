@@ -1,0 +1,8 @@
+#!/usr/bin/env python
+
+import os
+import sys
+
+
+script = os.path.join(os.path.dirname(__file__), 'src/tools/perf/run_benchmark')
+os.execv(sys.executable, [sys.executable, script] + sys.argv[1:])
