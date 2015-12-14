@@ -30,6 +30,7 @@ class ChromeBrowserBackend(browser_backend.BrowserBackend):
   def __init__(self, platform_backend, supports_tab_control,
                supports_extensions, browser_options, output_profile_path,
                extensions_to_load):
+    browser_options.browser_user_agent_type = 'custom'
     super(ChromeBrowserBackend, self).__init__(
         platform_backend=platform_backend,
         supports_extensions=supports_extensions,
