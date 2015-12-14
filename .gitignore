@@ -63,3 +63,5 @@ target/
 *.out
 results.html
 src/tools/
+failed_urls
+target_urls

@@ -4,8 +4,9 @@ Usage: sudo python telemetry.py
 """
 from base64 import urlsafe_b64encode, urlsafe_b64decode
 from glob import glob
-from subprocess import Popen, PIPE, STDOUT
 from os import geteuid
+from subprocess import Popen, PIPE, STDOUT
+import json
 
 def prescreenUrl(url):
     """Returns bool if url is online and available
@@ -131,6 +132,7 @@ def run_benchmarks(urlIndices):
     benchmark_path = './run_benchmark'
 
     for index in urlIndices:
+        print 'Running benchmark for url {0}'.format(index)
         page_set = 'page_cycler.url{0}'.format(index)
         cmd = ' '.join(['sudo', benchmark_path, page_set,
             '> results/url{0}.out'.format(index)])
@@ -138,9 +140,10 @@ def run_benchmarks(urlIndices):
         p = Popen(cmd, shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT)
         output, err = p.communicate()
 
+        # Fail silently for now.
         if p.returncode != 0:
-            raise Exception('Return code for url {0} was {1}'.format(
-                index, p.returncode))
+            failed_url('url{0}'.format(index), str(p.returncode))
+            print'Return code for url {0} was {1}'.format(index, p.returncode)
 
 
 def reset_old_files():
@@ -164,6 +167,30 @@ def reset_old_files():
     for cmd in commands:
         p = Popen(cmd, shell=True)
         p.wait()
+
+
+def get_cold_plts(url_index):
+    """Returns a list of cold page load times as floats for a given url index
+
+    :param url_index: int index of a url in results/
+    """
+    # TODO(jvesuna): This is ugly. Make it beautiful.
+    cmd = \
+        "sed -n 's/\*RESULT cold_times: page_load_time= //p' results/url{0}.out"
+    output = Popen(cmd.format(url_index), shell=True, stdout=PIPE)
+    string_vals = output.stdout.read().strip(' ms\n')[1:-1].split(',')
+    plts = [float(x) for x in string_vals]
+
+    return plts
+
+
+def write_plts_to_file(plt_dict):
+    """Writes a dict of plts to a results/plts.out in json human readable format
+
+    :param plt_dict: dict of index to list of plts
+    """
+    with open('results/plts.out', 'w') as f:
+        json.dump(plt_dict, f)
 
 
 def generate_hars():
@@ -284,14 +311,14 @@ def __main__():
         print "Must run as root"
         exit(1)
 
-    # Clean up old sessions
+    # Clean up old sessions.
     reset_old_files()
 
-    # Get url set
+    # Get url set.
     target_url_path = 'target_urls'
     urls = get_urls(target_url_path)
 
-    # Write page_set and generate individual user stories
+    # Write page_set and generate individual user stories.
     write_page_sets(urls)
 
     # Record WPR
@@ -309,11 +336,19 @@ def __main__():
     for url in bad_urls:
         failed_url(url, 'Recording error')
 
-    # Write a benchmark for each url
+    # Write a benchmark for each url.
     write_benchmarks(len(urls))
 
     # Run benchmark
     run_benchmarks(working_url_indices)
+
+    # Write cold page load times, in milliseconds.
+    plt_dict = {}
+    for url_index in working_url_indices:
+        plt_dict[url_index] = get_cold_plts(0)
+
+    write_plts_to_file(plt_dict)
+
 
 if __name__ == '__main__':
     __main__()
