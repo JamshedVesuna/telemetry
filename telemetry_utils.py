@@ -5,6 +5,7 @@ from sys import path
 import cPickle
 import json
 import os
+import pickle
 
 def prescreenUrl(url):
     """Returns bool if url is online and available
@@ -329,3 +330,40 @@ def get_wpr_stats(index, trial=0):
     wpr = json.loads(wpr_str)
 
     return wpr
+
+
+def get_wpr_intersection(index, trials):
+    """Returns a har object of the intersection of all resources in the url
+
+    :param index: int index of the url in src/tools/perf/page_sets/data/url
+    """
+    all_wprs = []
+    request_set = set()
+    response_set = set()
+    for i in range(trials):
+        curr_wpr = get_wpr(index, i)
+
+        curr_requests = set(curr_wpr.get_requests())
+        curr_responses = set()
+        for host in curr_wpr.responses_by_host.keys():
+            for response in curr_wpr.responses_by_host[host].keys():
+                curr_responses.add(response)
+
+        if i == 0:
+            request_set = curr_requests
+            response_set = curr_responses
+        else:
+            request_set = request_set.intersection(curr_requests)
+            response_set = response_set.intersection(curr_responses)
+
+    return request_set, response_set
+
+def write_intersection(index, request, response):
+    """Writes a dict to results/url{index}.inter
+
+    :param index: int index of the url
+    :param request: the set of requests in all loads of the url
+    :param responses: the set of responses in all loads of the url
+    """
+    pickle.dump({index: (request, response)},
+            open('results/{0}.inter'.format(index), 'wb'))
