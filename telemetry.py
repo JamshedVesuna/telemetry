@@ -2,6 +2,8 @@
 
 Usage: sudo python telemetry.py
 """
+from os import geteuid
+
 from telemetry_utils import *
 
 def __main__():
