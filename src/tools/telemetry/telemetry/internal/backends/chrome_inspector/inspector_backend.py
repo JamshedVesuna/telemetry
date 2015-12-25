@@ -299,6 +299,12 @@ class InspectorBackend(object):
     data = self._network.timeline_recorder.Stop()
     if data:
       builder.AddEventsTo(trace_data_module.INSPECTOR_TRACE_PART, data)
+
+      # TODO(jvesuna): Write unique url for each url timeline.
+      import json
+      with open('/tmp/events.json', 'wb') as f:
+          json.dump(data, f)
+
     self._timeline_model = timeline_model_module.TimelineModel(
         builder.AsData(), shift_world_to_zero=False)
 
