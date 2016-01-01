@@ -46,7 +46,7 @@ def __main__():
     # Write cold page load times, in milliseconds.
     plt_dict = {}
     for url_index in working_url_indices:
-        plt_dict[url_index] = get_cold_plts(0)
+        plt_dict[url_index] = get_cold_plts(url_index)
 
     write_plts_to_file(plt_dict)
 
