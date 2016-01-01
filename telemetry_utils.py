@@ -29,7 +29,7 @@ def prescreenUrl(url):
     return True
 
 
-def record_page_set(page_set, url, options='--browser=system'):
+def record_page_set(page_set, url, options='--browser=android-jb-system-chrome --chrome-root=/home/jamshed/src/'):
     """Runs wpr with telemetry to record an initial target page set
 
     :param page_set: str filename of the page set
@@ -66,7 +66,7 @@ def get_urls(path):
             goodUrls.append(url)
         else:
             print "FAIL prescreen: " + str(url)
-            failed_url(url)
+            failed_url(url, 'failed prescreen check')
 
     with open(path, 'wb') as f:
         f.write('\n'.join(goodUrls))
@@ -133,7 +133,8 @@ def run_benchmarks(urlIndices):
     for index in urlIndices:
         print 'Running benchmark for url {0}'.format(index)
         page_set = 'page_cycler.url{0}'.format(index)
-        cmd = ' '.join(['sudo', benchmark_path, page_set,
+        options = '--browser=android-jb-system-chrome --chrome-root=/home/jamshed/src/'
+        cmd = ' '.join(['sudo', benchmark_path, options, page_set,
             '> results/url{0}.out'.format(index)])
 
         p = Popen(cmd, shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT)
@@ -365,5 +366,5 @@ def write_intersection(index, request, response):
     :param request: the set of requests in all loads of the url
     :param responses: the set of responses in all loads of the url
     """
-    pickle.dump({index: (request, response)},
+    pickle.dump({index: [[x for x in request], [x for x in response]]},
             open('results/{0}.inter'.format(index), 'wb'))
