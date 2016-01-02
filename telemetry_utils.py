@@ -1,5 +1,6 @@
 from base64 import urlsafe_b64encode, urlsafe_b64decode
 from glob import glob
+from shutil import move, copy
 from subprocess import Popen, PIPE, STDOUT
 from sys import path
 import cPickle
@@ -91,6 +92,9 @@ def write_page_sets(urls):
     for i in range(len(urls)):
         with open('{0}/url{1}.py'.format(page_set_path, i), 'wb') as f:
             f.write(template.format(i, urls[i]))
+        # TODO(jvesuna): pc page sets may not be necessary.
+        with open('{0}/url{1}_pc.py'.format(page_set_path, i), 'wb') as f:
+            f.write(template.format(str(i) + '_pc', urls[i]))
 
 
 def failed_url(url, output):
@@ -101,6 +105,47 @@ def failed_url(url, output):
     """
     with open('failed_urls', 'a') as f:
         f.write('{0}: {1}\n'.format(url, output))
+
+
+def move_wpr_files(name_schema):
+    """Moves wpr files from within src/ to local data directory
+
+    :param name_schema: regex for the matching filename for wpr files
+    """
+    remote_data_path = os.path.join('src/tools/perf/page_sets/data/',
+        name_schema)
+    local_path = 'tmp_data/'
+    # Uses shutil.move
+    [move(f, local_path) for f in glob(remote_data_path)]
+
+
+def modify_wpr():
+    """Sets cacheable objects delay time to 0, creates pc.wpr files
+
+    Note: *.pc.wpr files are converted to url{index}_pc.wpr, which lets
+    them be treated like regular urls.
+    """
+    wpr_directory = 'tmp_data/'
+    wpr_path = \
+            'src/tools/telemetry/third_party/webpagereplay/modify_wpr_delays.py'
+    p = Popen('python {0} {1}'.format(wpr_path, wpr_directory), shell=True)
+    p.wait()
+    pc_files = filter(lambda x: 'pc' in x, os.listdir(wpr_directory))
+    for pc_file in pc_files:
+        insert_index = pc_file.find('_page')
+        new_file = pc_file[:insert_index] + '_pc' + pc_file[insert_index:]
+        new_file = new_file.replace('.pc', '')
+        # Uses shutil.move
+        move(os.path.join(wpr_directory, pc_file), os.path.join(wpr_directory,
+            new_file))
+
+
+def copy_wpr_to_benchmark():
+    """Copies wpr and _pc.wpr (all) files from local tmp_data/ to src/"""
+    local_path = 'tmp_data/*'
+    remote_data_path = 'src/tools/perf/page_sets/data/'
+    # Uses shutil.copy
+    [copy(f, remote_data_path) for f in glob(local_path)]
 
 
 def write_benchmarks(num_urls):
@@ -120,6 +165,8 @@ def write_benchmarks(num_urls):
     for i in range(num_urls):
         with open('{0}/url{1}.py'.format(benchmark_path, i), 'wb') as f:
             f.write(template.format(i))
+        with open('{0}/url{1}_pc.py'.format(benchmark_path, i), 'wb') as f:
+            f.write(template.format(str(i) + '_pc'))
 
 
 def run_benchmarks(urlIndices):
@@ -131,37 +178,40 @@ def run_benchmarks(urlIndices):
     benchmark_path = './run_benchmark'
 
     for index in urlIndices:
-        print 'Running benchmark for url {0}'.format(index)
-        page_set = 'page_cycler.url{0}'.format(index)
-        options = '--browser=android-jb-system-chrome --chrome-root=/home/jamshed/src/'
-        cmd = ' '.join(['sudo', benchmark_path, options, page_set,
-            '> results/url{0}.out'.format(index)])
+        for modified_index in [index, str(index) + '_pc']:
+            print 'Running benchmark for url {0}'.format(modified_index)
+            page_set = 'page_cycler.url{0}'.format(modified_index)
+            options = '--browser=android-jb-system-chrome --chrome-root=/home/jamshed/src/'
+            cmd = ' '.join(['sudo', benchmark_path, options, page_set,
+                '> results/url{0}.out'.format(modified_index)])
 
-        p = Popen(cmd, shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT)
-        output, err = p.communicate()
+            p = Popen(cmd, shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT)
+            output, err = p.communicate()
 
-        # Fail silently for now.
-        if p.returncode != 0:
-            failed_url('url{0}'.format(index), str(p.returncode))
-            print'Return code for url {0} was {1}'.format(index, p.returncode)
+            # Fail silently for now.
+            if p.returncode != 0:
+                failed_url('url{0}'.format(modified_index), str(p.returncode))
+                print'Return code for url {0} was {1}'.format(modified_index, p.returncode)
 
 
 def reset_old_files():
     """Deletes old files to make way for a new run
 
     Removes:
-    src/tools/perf/page_sets/url*
-    src/tools/perf/page_sets/data/url*
-    src/tools/perf/benchmarks/*
-    src/tools/perf/results.html
     results/*
+    src/tools/perf/benchmarks/*
+    src/tools/perf/page_sets/data/url*
+    src/tools/perf/page_sets/url*
+    src/tools/perf/results.html
+    tmp_data/*
     """
     commands = [
-        'rm -f src/tools/perf/page_sets/url*',
-        'rm -f src/tools/perf/page_sets/data/url*',
-        'rm -f src/tools/perf/benchmarks/url*',
-        'rm -f src/tools/perf/results.html',
         'rm -f results/*',
+        'rm -f src/tools/perf/benchmarks/url*',
+        'rm -f src/tools/perf/page_sets/data/url*',
+        'rm -f src/tools/perf/page_sets/url*',
+        'rm -f src/tools/perf/results.html',
+        'rm -f tmp_data/*',
             ]
 
     for cmd in commands:
@@ -368,3 +418,32 @@ def write_intersection(index, request, response):
     """
     pickle.dump({index: [[x for x in request], [x for x in response]]},
             open('results/{0}.inter'.format(index), 'wb'))
+
+
+def write_json(urls):
+    """Writes a *_pc.json file for each url
+
+    Located in src/tools/perf/page_sets/data/
+    :param urls: list of urls
+    """
+    for index, url in enumerate(urls):
+        write_pc_json(index, url)
+
+def write_pc_json(url_index, url):
+    """Creates *_pc.json files to point to the modified archive files
+
+    Located in src/tools/perf/page_sets/data/
+    TODO: add sha1 to remove runtime WARNING
+
+    :param url_index: int for the number of target urls
+    :param url: str the url
+    """
+    json_path = 'src/tools/perf/page_sets/data/'
+    json_template = ('{{ '
+    '"description": "Describes the Web Page Replay archives for a story set. Dont edit by hand! Use record_wpr for updating.", '
+    '"archives": {{ "url{0}_pc_page_000.wpr": [ "{1}" ] }} }}\n')
+
+    file_name = os.path.join(json_path, 'url{0}_pc_page.json'.format(url_index))
+
+    with open(file_name, 'wb') as f:
+        f.write(json_template.format(url_index, url))

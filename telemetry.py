@@ -22,6 +22,9 @@ def __main__():
     # Write page_set and generate individual user stories.
     write_page_sets(urls)
 
+    # Write modified pc json files.
+    write_json(urls)
+
     # Record WPR
     working_url_indices = []
     bad_urls = []
@@ -37,6 +40,13 @@ def __main__():
     for url in bad_urls:
         failed_url(url, 'Recording error')
 
+    # Move files here for modification.
+    move_wpr_files('url*_page_*.wpr')
+    # Modify wpr to create perfect cache 'pc' files.
+    modify_wpr()
+    # Move files back to benchmark location.
+    copy_wpr_to_benchmark()
+
     # Write a benchmark for each url.
     write_benchmarks(len(urls))
 
@@ -46,7 +56,8 @@ def __main__():
     # Write cold page load times, in milliseconds.
     plt_dict = {}
     for url_index in working_url_indices:
-        plt_dict[url_index] = get_cold_plts(url_index)
+        for modified_index in [url_index, str(url_index) + '_pc']:
+            plt_dict[modified_index] = get_cold_plts(modified_index)
 
     write_plts_to_file(plt_dict)
 
