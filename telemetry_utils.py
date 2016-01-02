@@ -61,7 +61,6 @@ def get_urls(path):
     with open(path, 'rb') as f:
         urls = [x.strip() for x in f.readlines()]
 
-    return urls
     # Prune urls that are not working
     goodUrls = []
     for url in urls:
