@@ -61,6 +61,8 @@ def __main__():
 
     write_plts_to_file(plt_dict)
 
+    generate_hars(urls)
+
 
 if __name__ == '__main__':
     __main__()

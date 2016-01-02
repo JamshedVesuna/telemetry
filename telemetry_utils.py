@@ -4,9 +4,11 @@ from shutil import move, copy
 from subprocess import Popen, PIPE, STDOUT
 from sys import path
 import cPickle
+import cPickle
 import json
 import os
 import pickle
+import re
 
 def prescreenUrl(url):
     """Returns bool if url is online and available
@@ -341,12 +343,8 @@ def generate_hars():
             curr_har_dict['log']['entries'].append(curr_entry)
 
         # Write to har file
-        if wpr_host is None:
-            print 'Could not create host from url: {0}'.format(wpr_file)
-            continue
-
-        har_path = '../data/replay/'
-        file_name = har_path + wpr_host + '.har'  # Modified for har processing
+        har_path = 'hars/'
+        file_name = os.path.join(har_path, wpr_host, '.har')
         with open(file_name, 'wb') as f:
             try:
                 json.dump(curr_har_dict, f)
@@ -447,3 +445,126 @@ def write_pc_json(url_index, url):
 
     with open(file_name, 'wb') as f:
         f.write(json_template.format(url_index, url))
+
+def get_min_plts_from_results(modified_url_index):
+    """Returns the minimum page load time from results/plts.out for url_index
+
+    :param modified_url_index: str index of the url in the list of target urls.
+        Example: "1", "1_pc"
+    """
+    all_plts = {}
+    with open('results/plts.out', 'r') as f:
+        all_plts = json.load(f)
+
+    if all_plts != {}:
+        if modified_url_index in all_plts.keys():
+            return min(all_plts[modified_url_index])
+
+def generate_hars(urls):
+    """Generates a HAR file from a WPR file
+
+    Merge plts and wprs into a har file
+    Stores 2 .har files per url (regular and modified) in hars/
+    :param urls: list of string urls, ordered by the indices of target_urls
+    """
+
+    # Enable usage of httparchive.py
+    path.append("src/tools/telemetry/third_party/webpagereplay/")
+
+    wpr_path = 'tmp_data/'
+    wpr_files = filter(lambda x: '.wpr' in x, os.listdir(wpr_path))
+    for wpr_file in wpr_files:
+        try:
+            url_index = re.match('url([0-9]+)_', wpr_file).group(1)
+        except:
+            raise Exception('Unable to parse index from wpr file: {0}'.format(
+                wpr_file))
+
+        url_name = urls[int(url_index)]
+
+        is_pc = False
+        if "pc" in wpr_file:
+            is_pc = True
+            url_index += '_pc'
+            # It's a modified wpr file
+            wpr_host = urlsafe_b64encode(url_name) + '.pc'
+        else:
+            # It's an original wpr file
+            wpr_host = urlsafe_b64encode(url_name)
+
+        min_plt = get_min_plts_from_results(url_index)
+        if min_plt is None:
+            # Can't find the Page Load Time for this url.
+            continue
+
+        curr_wpr = cPickle.load(open(os.path.join(wpr_path, wpr_file), 'rb'))
+        curr_har_dict = {'log':
+                            {'pages':
+                                [{'id': '',
+                                 'title': '',
+                                 'pageTimings': {
+                                        'onContentLoad': None,
+                                        'onLoad': None
+                                        }
+                                 }],
+                             'entries': []
+                            }
+                        }
+        for key, value_lst in zip(curr_wpr.keys(), curr_wpr.values()):
+            curr_har_dict['log']['pages'][0]['id'] = key.host
+            curr_har_dict['log']['pages'][0]['title'] = key.host
+            curr_har_dict['log']['pages'][0]['pageTimings']['onLoad'] = min_plt
+
+            # Add to each element to entries
+            # Request data
+            method = key.command
+            element_url = key.host + key.full_path
+            # Response data
+            status = value_lst.status
+
+            # TODO(jvesuna): Correct way to calculate headersSize and bodySize?
+            headerSize = 0  # Need to find this in value_lst
+            bodySize = 0  # Need to find this in value_lst
+            # Create each element's header list
+            tmp_header_lst = []
+            for name, value in value_lst.headers:
+                if 'content-length' in name:
+                    bodySize = int(value)
+                headerSize += len(name) + len(value)  # This should be verified
+                tmp_header_lst.append({'name': name, 'value': value})
+
+            tmp_entry = {
+                        'request': {
+                            'method': None,
+                            'url': None
+                            },
+                        'response': {
+                                'status': None,
+                                'headers': [],
+                                'headersSize': None,
+                                'bodySize': None
+                            }
+                    }
+            curr_entry = tmp_entry.copy()
+            curr_entry['request']['method'] = method
+            curr_entry['request']['url'] = element_url
+            curr_entry['response']['status'] = status
+            curr_entry['response']['headers'] = tmp_header_lst
+            curr_entry['response']['headersSize'] = headerSize
+            curr_entry['response']['bodySize'] = bodySize
+
+            curr_har_dict['log']['entries'].append(curr_entry)
+
+        # Write to har file
+        if wpr_host is None:
+            print 'Could not create host from url: {0}'.format(wpr_file)
+            continue
+
+        har_path = 'hars/'
+        file_name = har_path + wpr_host + '.har'  # Modified for har processing
+        with open(file_name, 'wb') as f:
+            try:
+                json.dump(curr_har_dict, f)
+            except:
+                # Silently fail
+                print "Unable to write har file: " + str(file_name)
