@@ -66,3 +66,4 @@ results/
 src/tools/
 failed_urls
 target_urls
+hars/*
