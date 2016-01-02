@@ -61,6 +61,7 @@ def get_urls(path):
     with open(path, 'rb') as f:
         urls = [x.strip() for x in f.readlines()]
 
+    return urls
     # Prune urls that are not working
     goodUrls = []
     for url in urls:
@@ -231,7 +232,7 @@ def get_cold_plts(url_index):
         "sed -n 's/\*RESULT cold_times: page_load_time= //p' results/url{0}.out"
     output = Popen(cmd.format(url_index), shell=True, stdout=PIPE)
     string_vals = output.stdout.read().strip(' ms\n')[1:-1].split(',')
-    plts = [float(x) for x in string_vals]
+    plts = [float(x) for x in string_vals if x]
 
     return plts
 
@@ -568,3 +569,14 @@ def generate_hars(urls):
             except:
                 # Silently fail
                 print "Unable to write har file: " + str(file_name)
+
+def write_valids():
+    """Writes valid urls to /home/jamshed/page_load_time/data/filtered_stats"""
+    har_path = "/home/jamshed/scripts/telemetry/hars/*"
+    valid_path = "/home/jamshed/page_load_time/data/filtered_stats/valids.txt"
+    har_files = [f for f in glob(har_path)]
+    urls = \
+        [urlsafe_b64decode(f.split('/')[-1].split('.')[0]) for f in har_files]
+    with open(valid_path, 'w') as f:
+        for url, url_har_path in zip(urls, har_files):
+            f.write('{0} {1}\n'.format(url, url_har_path))

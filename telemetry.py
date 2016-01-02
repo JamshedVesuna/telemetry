@@ -55,13 +55,17 @@ def __main__():
 
     # Write cold page load times, in milliseconds.
     plt_dict = {}
-    for url_index in working_url_indices:
+    for url_index in range(len(urls)):
         for modified_index in [url_index, str(url_index) + '_pc']:
-            plt_dict[modified_index] = get_cold_plts(modified_index)
+            tmp = get_cold_plts(modified_index)
+            if tmp:
+                plt_dict[modified_index] = tmp
 
     write_plts_to_file(plt_dict)
 
     generate_hars(urls)
+
+    write_valids()
 
 
 if __name__ == '__main__':
