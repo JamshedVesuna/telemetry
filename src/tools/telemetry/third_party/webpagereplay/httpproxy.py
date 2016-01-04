@@ -138,7 +138,7 @@ class HttpArchiveHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         logging.debug('Using round trip delay: %sms',
                       self.server.traffic_shaping_delay_ms)
         time.sleep(self.server.traffic_shaping_delay_ms / 1000.0)
-      if is_replay and self.server.use_delays:
+      if is_replay and True:
         logging.debug('Using delays (ms): %s', response.delays)
         time.sleep(response.delays['headers'] / 1000.0)
         delays = response.delays['data']
