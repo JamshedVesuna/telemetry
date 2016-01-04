@@ -183,7 +183,7 @@ def run_benchmarks(urlIndices):
         for modified_index in [index, str(index) + '_pc']:
             print 'Running benchmark for url {0}'.format(modified_index)
             page_set = 'page_cycler.url{0}'.format(modified_index)
-            options = '--browser=android-jb-system-chrome --chrome-root=/home/jamshed/src/'
+            options = '--browser=android-jb-system-chrome'
             cmd = ' '.join(['sudo', benchmark_path, options, page_set,
                 '> results/url{0}.out'.format(modified_index)])
 
