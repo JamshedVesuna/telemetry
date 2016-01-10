@@ -142,6 +142,29 @@ def modify_wpr():
             new_file))
 
 
+def inflate_wpr(fixed=0, percentage=1):
+    """Increases cacheable objects delay time by a fixed value or percentage
+
+    Also creates pc.wpr files
+    Note: *.pc.wpr files are converted to url{index}_pc.wpr, which lets
+    them be treated like regular urls.
+    """
+    wpr_directory = 'tmp_data/'
+    wpr_path = \
+            'src/tools/telemetry/third_party/webpagereplay/inflate_wpr_delays.py'
+    p = Popen('python {0} --fixed={1} --percentage={2} {3}'.format(
+        wpr_path, fixed, percentage, wpr_directory), shell=True)
+    p.wait()
+    pc_files = filter(lambda x: 'pc' in x, os.listdir(wpr_directory))
+    for pc_file in pc_files:
+        insert_index = pc_file.find('_page')
+        new_file = pc_file[:insert_index] + '_pc' + pc_file[insert_index:]
+        new_file = new_file.replace('.pc', '')
+        # Uses shutil.move
+        move(os.path.join(wpr_directory, pc_file), os.path.join(wpr_directory,
+            new_file))
+
+
 def copy_wpr_to_benchmark():
     """Copies wpr and _pc.wpr (all) files from local tmp_data/ to src/"""
     local_path = 'tmp_data/*'
