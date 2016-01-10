@@ -223,6 +223,7 @@ def reset_old_files():
     """Deletes old files to make way for a new run
 
     Removes:
+    hars/*
     results/*
     src/tools/perf/benchmarks/*
     src/tools/perf/page_sets/data/url*
@@ -231,6 +232,7 @@ def reset_old_files():
     tmp_data/*
     """
     commands = [
+        'rm -f hars/*',
         'rm -f results/*',
         'rm -f src/tools/perf/benchmarks/url*',
         'rm -f src/tools/perf/page_sets/data/url*',
