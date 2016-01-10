@@ -63,7 +63,9 @@ target/
 *.out
 results.html
 results/
-src/tools/
 failed_urls
 target_urls
 hars/*
+src/tools/perf/benchmarks/*
+src/tools/perf/page_sets/*
+src/tools/telemetry/telemetry/*
