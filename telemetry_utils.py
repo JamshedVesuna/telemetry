@@ -151,15 +151,16 @@ def inflate_wpr(fixed=0, percentage=1):
     """
     wpr_directory = 'tmp_data/'
     wpr_path = \
-            'src/tools/telemetry/third_party/webpagereplay/inflate_wpr_delays.py'
+          'src/tools/telemetry/third_party/webpagereplay/inflate_wpr_delays.py'
     p = Popen('python {0} --fixed={1} --percentage={2} {3}'.format(
         wpr_path, fixed, percentage, wpr_directory), shell=True)
     p.wait()
-    pc_files = filter(lambda x: 'pc' in x, os.listdir(wpr_directory))
-    for pc_file in pc_files:
+    inflated_files = filter(lambda x: 'inflated' in x,
+        os.listdir(wpr_directory))
+    for pc_file in inflated_files:
         insert_index = pc_file.find('_page')
-        new_file = pc_file[:insert_index] + '_pc' + pc_file[insert_index:]
-        new_file = new_file.replace('.pc', '')
+        new_file = pc_file[:insert_index] + pc_file[insert_index:]
+        new_file = new_file.replace('.inflated', '')
         # Uses shutil.move
         move(os.path.join(wpr_directory, pc_file), os.path.join(wpr_directory,
             new_file))

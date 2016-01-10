@@ -57,7 +57,7 @@ if __name__ == '__main__':
 
     for wpr in glob.iglob(args[-1] + "/*.wpr"):
         archive = HttpArchive.Load(wpr)
-        output_file = re.sub('.wpr$', '.pc.wpr', wpr)
+        output_file = re.sub('.wpr$', '.inflated.wpr', wpr)
         if not os.path.exists(output_file):
             inflate_delays(archive, fixed=fixed, percentage=percentage)
             archive.Persist(output_file)
