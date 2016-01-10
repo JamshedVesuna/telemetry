@@ -19,8 +19,10 @@ def inflate_delays(archive, fixed=0, percentage=1):
        response = archive[request]
        for key in response.delays:
            if type(response.delays[key]) == list:
-               response.delays[key] = [response.delays[key][item] * percentage
-                       + fixed for item in response.delays[key]]
+               new_delays = []
+               for item in response.delays[key]:
+                   new_delays.append(item * percentage + fixed)
+               response.delays[key] = new_delays
            else:
                response.delays[key] = response.delays[key] * percentage + fixed
        response.fix_delays()
