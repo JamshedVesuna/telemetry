@@ -33,7 +33,7 @@ def get_random_indices(indices, percentage):
     return indices[:int(len(indices)*percentage)]
 
 # Modified archive.
-def assume_perfect_cache(archive, percentage):
+def assume_perfect_cache(archive, percentage, item_dict):
   cacheable_indices = []
   i = 0
   for request in archive:
@@ -44,12 +44,23 @@ def assume_perfect_cache(archive, percentage):
   rand = get_random_indices(range(i), percentage)
 
   i = 0
+  cached = []
   for request in archive:
     response = archive[request]
-    if is_cacheable(response) and i in rand:
+    if item_dict == []:
+        if is_cacheable(response) and i in rand:
+          print "Caching an object!"
+          response.delays = None
+          response.fix_delays()
+          cached.append(response)
+    elif response in item_dict:
+      print "Caching an object!"
       response.delays = None
       response.fix_delays()
+
     i += 1
+
+  return cached
 
 def is_cacheable(response):
   # We use an array to handle the case where there are redundant headers. The
@@ -100,6 +111,13 @@ if __name__ == '__main__':
   for wpr in glob.iglob(args[0] + "/*.wpr"):
     archive = HttpArchive.Load(wpr)
     output_file = re.sub('.wpr$', '.pc.wpr', wpr)
+    output_file2 = re.sub('.wpr$', '.p2c.wpr', wpr)
     if not os.path.exists(output_file):
-      assume_perfect_cache(archive, 0.2)
+      print "Caching"
+      cached_responses = assume_perfect_cache(archive, 0.3, [])
       archive.Persist(output_file)
+
+      # 60% of 30% is 20%
+      print "next"
+      cached_responses = assume_perfect_cache(HttpArchive.Load(wpr), 0.2, cached_responses[:int((2/3)*len(cached_responses))])
+      archive.Persist(output_file2)
