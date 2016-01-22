@@ -26,14 +26,30 @@ import os
 import re
 import optparse
 
+def get_random(percentage):
+    """Returns a generator
+
+    :param percentage: A decimal less than 1
+    """
+    i = 0
+    while True:
+        yield i % int((1/percentage))
+        i += 1
+
 # Modified archive.
 def assume_perfect_cache(archive):
+  rand = get_random(0.3)
   for request in archive:
     response = archive[request]
     if is_cacheable(response):
+      if True:
+          if rand.next() == 0:
+              response.delays = None
+              response.fix_delays()
       # Set all delays to zero:
-      response.delays = None
-      response.fix_delays()
+      else:
+          response.delays = None
+          response.fix_delays()
 
 def is_cacheable(response):
   # We use an array to handle the case where there are redundant headers. The
