@@ -21,35 +21,35 @@ See httparchive.py.ArchivedHttpResponse.fix_delays() for delay setting
 # with very short expirations.
 
 from httparchive import HttpArchive
+from random import shuffle
 import glob
 import os
 import re
 import optparse
 
-def get_random(percentage):
-    """Returns a generator
-
-    :param percentage: A decimal less than 1
-    """
-    i = 0
-    while True:
-        yield i % int((1/percentage))
-        i += 1
+def get_random_indices(indices, percentage):
+    """Returns a subset list of random indicies"""
+    shuffle(indices)
+    return indices[:int(len(indices)*percentage)]
 
 # Modified archive.
-def assume_perfect_cache(archive):
-  rand = get_random(0.3)
+def assume_perfect_cache(archive, percentage):
+  cacheable_indices = []
+  i = 0
   for request in archive:
     response = archive[request]
     if is_cacheable(response):
-      if True:
-          if rand.next() == 0:
-              response.delays = None
-              response.fix_delays()
-      # Set all delays to zero:
-      else:
-          response.delays = None
-          response.fix_delays()
+        cacheable_indices.append(i)
+    i += 1
+  rand = get_random_indices(range(i), percentage)
+
+  i = 0
+  for request in archive:
+    response = archive[request]
+    if is_cacheable(response) and i in rand:
+      response.delays = None
+      response.fix_delays()
+    i += 1
 
 def is_cacheable(response):
   # We use an array to handle the case where there are redundant headers. The
@@ -101,5 +101,5 @@ if __name__ == '__main__':
     archive = HttpArchive.Load(wpr)
     output_file = re.sub('.wpr$', '.pc.wpr', wpr)
     if not os.path.exists(output_file):
-      assume_perfect_cache(archive)
+      assume_perfect_cache(archive, 0.2)
       archive.Persist(output_file)
