@@ -79,7 +79,7 @@ class TestOwnerTest(testing_common.TestCase):
         'ChromiumPerf/speedometer': {'dan@chromium.org'},
         'ChromiumPerf/jetstream': {'michael@chromium.org'},
     }
-    master_owner_dict_cache = {
+    main_owner_dict_cache = {
         'ChromiumPerf/speedometer':
             {'chris@google.com', 'chris@chromium.org', 'dan@chromium.org'},
         'ChromiumPerf/jetstream': {'michael@chromium.org'},
@@ -94,7 +94,7 @@ class TestOwnerTest(testing_common.TestCase):
     layered_cache.SetExternal(
         test_owner._CHARTJSON_OWNER_CACHE_KEY, chartjson_owner_dict_cache)
     layered_cache.SetExternal(
-        test_owner._MASTER_OWNER_CACHE_KEY, master_owner_dict_cache)
+        test_owner._MASTER_OWNER_CACHE_KEY, main_owner_dict_cache)
 
     test_owner.UpdateOwnerFromChartjson(new_chartjson_owner_dict)
 
@@ -102,9 +102,9 @@ class TestOwnerTest(testing_common.TestCase):
         test_owner._CHARTJSON_OWNER_CACHE_KEY)
     self.assertEqual(_ANOTHER_SAMPLE_OWNER_DICT, updated_chartjson_owner_dict)
 
-    updated_master_owner_dict = layered_cache.GetExternal(
+    updated_main_owner_dict = layered_cache.GetExternal(
         test_owner._MASTER_OWNER_CACHE_KEY)
-    self.assertEqual(_COMBINED_SAMPLE_OWNER_DICT, updated_master_owner_dict)
+    self.assertEqual(_COMBINED_SAMPLE_OWNER_DICT, updated_main_owner_dict)
 
 
 if __name__ == '__main__':

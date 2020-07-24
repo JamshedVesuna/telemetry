@@ -383,7 +383,7 @@ class WinPlatformBackend(desktop_platform_backend.DesktopPlatformBackend):
     #
     # It seems that intermittently this code manages to find windows
     # that don't belong to Chrome -- for example, the cmd.exe window
-    # running slave.bat on the tryservers. Try to be careful about
+    # running subordinate.bat on the tryservers. Try to be careful about
     # finding only Chrome's windows. This works for both the browser
     # and content_shell.
     #

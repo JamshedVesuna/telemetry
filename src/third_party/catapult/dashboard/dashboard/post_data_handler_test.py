@@ -12,7 +12,7 @@ from dashboard import post_data_handler
 from dashboard import testing_common
 
 _SAMPLE_POINT = {
-    'master': 'ChromiumPerf',
+    'main': 'ChromiumPerf',
     'bot': 'win7',
     'test': 'foo/bar/baz',
     'revision': '12345',

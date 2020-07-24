@@ -43,7 +43,7 @@ class FileBugTest(testing_common.TestCase):
 
   def _AddSampleAlerts(self):
     """Adds sample data and returns a dict of rev to anomaly key."""
-    # Add sample sheriff, masters, bots, and tests.
+    # Add sample sheriff, mains, bots, and tests.
     sheriff_key = sheriff.Sheriff(id='Sheriff').put()
     testing_common.AddTests(['ChromiumPerf'], ['linux'], {
         'scrolling': {

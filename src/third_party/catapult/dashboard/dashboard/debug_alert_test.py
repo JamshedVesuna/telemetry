@@ -200,20 +200,20 @@ class DebugAlertTest(testing_common.TestCase):
     test_key = self._AddSampleData()
     # Both string and int can be accepted for revision.
     self.assertEqual(
-        '/report?masters=M&bots=b&tests=suite%2Ffoo&rev=310',
+        '/report?mains=M&bots=b&tests=suite%2Ffoo&rev=310',
         debug_alert._GraphUrl(test_key.get(), 310))
     self.assertEqual(
-        '/report?masters=M&bots=b&tests=suite%2Ffoo&rev=310',
+        '/report?mains=M&bots=b&tests=suite%2Ffoo&rev=310',
         debug_alert._GraphUrl(test_key.get(), '310'))
 
   def testGraphUrl_NoRevisionGiven_NoRevisionParamInUrl(self):
     test_key = self._AddSampleData()
     # Both None and empty string mean "no revision".
     self.assertEqual(
-        '/report?masters=M&bots=b&tests=suite%2Ffoo',
+        '/report?mains=M&bots=b&tests=suite%2Ffoo',
         debug_alert._GraphUrl(test_key.get(), ''))
     self.assertEqual(
-        '/report?masters=M&bots=b&tests=suite%2Ffoo',
+        '/report?mains=M&bots=b&tests=suite%2Ffoo',
         debug_alert._GraphUrl(test_key.get(), None))
 
 

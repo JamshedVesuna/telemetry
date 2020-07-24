@@ -22,7 +22,7 @@ import urllib
 import urllib2
 
 BUILDER_LIST_URL = ('https://chrome-infra-stats.appspot.com/'
-                    '_ah/api/stats/v1/masters/chromium.perf')
+                    '_ah/api/stats/v1/mains/chromium.perf')
 
 BUILDER_STATS_URL = ('https://chrome-infra-stats.appspot.com/_ah/api/stats/v1/'
                      'stats/chromium.perf/%s/overall__build__result__/%s')
@@ -105,7 +105,7 @@ def UploadToPerfDashboard(success_rates):
     date_str = ('%s-%s-%s' %
         (success_rate[0][0:4], success_rate[0][4:6], success_rate[0][6:8]))
     dashboard_data = {
-        'master': 'WaterfallStats',
+        'main': 'WaterfallStats',
         'bot': 'ChromiumPerf',
         'point_id': int(success_rate[0]),
         'supplemental': {},

@@ -63,7 +63,7 @@ class MainTest(testing_common.TestCase):
     self.assertEqual(
         [
             {
-                'master': 'M',
+                'main': 'M',
                 'bot': 'b',
                 'testsuite': 't',
                 'test': 'foo',

@@ -40,7 +40,7 @@ _TEST_COMPUTED_PROPERTIES = [
     'parent_test',
     'test_path',
     'id',
-    'master_name',
+    'main_name',
     'bot_name',
     'suite_name',
     'test_part1_name',
@@ -58,7 +58,7 @@ _TEST_DEPRECATED_PROPERTIES = [
     'overridden_gasp_modelset',
     'units_x',
     'buildername',
-    'masterid',
+    'mainid',
 ]
 _TEST_EXCLUDE = _TEST_COMPUTED_PROPERTIES + _TEST_DEPRECATED_PROPERTIES
 

@@ -17,7 +17,7 @@ from dashboard.models import graph_data
 from dashboard.models import sheriff
 from dashboard.models import stoppage_alert
 
-# Masters, bots and test names to add to the mock datastore.
+# Mains, bots and test names to add to the mock datastore.
 _MOCK_DATA = [
     ['ChromiumPerf', 'ChromiumWebkit'],
     ['win7', 'mac'],
@@ -101,12 +101,12 @@ class MigrateTestNamesTest(testing_common.TestCase):
     """Checks whether the current Test entities match the expected list.
 
     Args:
-      expected_tests: List of test paths without the master/bot part.
+      expected_tests: List of test paths without the main/bot part.
     """
-    for master in _MOCK_DATA[0]:
+    for main in _MOCK_DATA[0]:
       for bot in _MOCK_DATA[1]:
-        expected = ['%s/%s/%s' % (master, bot, t) for t in expected_tests]
-        bot_key = ndb.Key('Master', master, 'Bot', bot)
+        expected = ['%s/%s/%s' % (main, bot, t) for t in expected_tests]
+        bot_key = ndb.Key('Main', main, 'Bot', bot)
         tests = graph_data.Test.query(ancestor=bot_key).fetch()
         actual = [t.test_path for t in tests]
         self.assertEqual(expected, actual)
@@ -293,28 +293,28 @@ class MigrateTestNamesTest(testing_common.TestCase):
     self.assertIn('sheriffed by Perf Sheriff Win', body)
 
   def testPost_MigratesStoppageAlerts(self):
-    testing_common.AddTests(['Master'], ['b'], {'suite': {'foo': {}}})
-    test_path = 'Master/b/suite/foo'
+    testing_common.AddTests(['Main'], ['b'], {'suite': {'foo': {}}})
+    test_path = 'Main/b/suite/foo'
     test_key = utils.TestKey(test_path)
     test_container_key = utils.GetTestContainerKey(test_key)
     row_key = graph_data.Row(id=100, parent=test_container_key, value=5).put()
     stoppage_alert.CreateStoppageAlert(test_key.get(), row_key.get()).put()
     self.assertIsNotNone(
-        stoppage_alert.GetStoppageAlert('Master/b/suite/foo', 100))
+        stoppage_alert.GetStoppageAlert('Main/b/suite/foo', 100))
     self.assertIsNone(
-        stoppage_alert.GetStoppageAlert('Master/b/suite/bar', 100))
+        stoppage_alert.GetStoppageAlert('Main/b/suite/bar', 100))
 
     self.testapp.post('/migrate_test_names', {
-        'old_pattern': 'Master/b/suite/foo',
-        'new_pattern': 'Master/b/suite/bar',
+        'old_pattern': 'Main/b/suite/foo',
+        'new_pattern': 'Main/b/suite/bar',
     })
     self.ExecuteTaskQueueTasks(
         '/migrate_test_names', migrate_test_names._TASK_QUEUE_NAME)
 
     self.assertIsNotNone(
-        stoppage_alert.GetStoppageAlert('Master/b/suite/bar', 100))
+        stoppage_alert.GetStoppageAlert('Main/b/suite/bar', 100))
     self.assertIsNone(
-        stoppage_alert.GetStoppageAlert('Master/b/suite/foo', 100))
+        stoppage_alert.GetStoppageAlert('Main/b/suite/foo', 100))
 
   def testGetNewTestPath_WithAsterisks(self):
     self.assertEqual(

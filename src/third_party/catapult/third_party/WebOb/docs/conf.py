@@ -6,7 +6,7 @@ version = release = pkg_resources.get_distribution('webob').version
 extensions = ['sphinx.ext.autodoc']
 
 source_suffix = '.txt' # The suffix of source filenames.
-master_doc = 'index' # The master toctree document.
+main_doc = 'index' # The main toctree document.
 
 project = 'WebOb'
 copyright = '2011, Ian Bicking and contributors'

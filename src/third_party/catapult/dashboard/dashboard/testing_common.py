@@ -101,19 +101,19 @@ class TestCase(unittest.TestCase):
     return None
 
 
-def AddTests(masters, bots, tests_dict):
+def AddTests(mains, bots, tests_dict):
   """Adds data to the mock datastore.
 
   Args:
-    masters: List of buildbot master names.
+    mains: List of buildbot main names.
     bots: List of bot names.
     tests_dict: Nested dictionary of tests to add; keys are test names
         and values are nested dictionaries of tests to add.
   """
-  for master_name in masters:
-    master_key = graph_data.Master(id=master_name).put()
+  for main_name in mains:
+    main_key = graph_data.Main(id=main_name).put()
     for bot_name in bots:
-      bot_key = graph_data.Bot(id=bot_name, parent=master_key).put()
+      bot_key = graph_data.Bot(id=bot_name, parent=main_key).put()
       for test_name in tests_dict:
         test_key = graph_data.Test(id=test_name, parent=bot_key).put()
         _AddSubtest(test_key, tests_dict[test_name])

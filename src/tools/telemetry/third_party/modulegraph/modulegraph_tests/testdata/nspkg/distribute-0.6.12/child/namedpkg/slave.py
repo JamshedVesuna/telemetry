@@ -1,2 +1,2 @@
-""" slave packages """
+""" subordinate packages """
 import os

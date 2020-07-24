@@ -15,10 +15,10 @@ class EmbedHandler(chart_handler.ChartHandler):
     """Renders the UI for a simple, embeddable chart.
 
     Request parameters:
-      masters: Comma-separated list of master names.
+      mains: Comma-separated list of main names.
       bots: Comma-separated list of bot names.
       tests: Comma-separated list of of slash-separated test paths
-          (without master/bot).
+          (without main/bot).
       rev: Revision number (optional).
       num_points: Number of points to plot (optional).
       start_rev: Starting evision number (optional).

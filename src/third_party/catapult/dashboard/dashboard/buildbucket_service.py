@@ -17,7 +17,7 @@ _DISCOVERY_URL = (
     '/_ah/api/discovery/v1/apis/{api}/{apiVersion}/rest')
 
 # Default Buildbucket bucket name.
-_BUCKET_NAME = 'master.tryserver.chromium.perf'
+_BUCKET_NAME = 'main.tryserver.chromium.perf'
 
 # Scope required by the Build Bucket Service.
 _OAUTH2_SCOPE = 'https://www.googleapis.com/auth/userinfo.email'

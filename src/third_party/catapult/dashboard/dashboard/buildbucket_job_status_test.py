@@ -20,7 +20,7 @@ SAMPLE_RESPONSE = r"""{
   "created_ts": "1430771172999340",
   "url": "http://build.chromium.org/p/tryserver.chromium.perf/builders\
 /linux_perf_bisector/builds/32",
-  "bucket": "master.tryserver.chromium.perf",
+  "bucket": "main.tryserver.chromium.perf",
   "result_details_json": "{\"properties\": {\
 \"got_nacl_revision\": \"660eb1e1c91349b53f0d60bbf9a92e31f4cf4e1d\", \
 \"got_swarming_client_revision\": \
@@ -28,21 +28,21 @@ SAMPLE_RESPONSE = r"""{
 \"got_revision\": \"d558f46c34085abfc9f59824fdc3466f45c40152\", \
 \"build_url\": \"gs://chrome-perf/Linux Bisector\", \
 \"recipe\": \"bisect\", \
-\"got_webrtc_revision_cp\": \"refs/heads/master@{#9128}\", \
+\"got_webrtc_revision_cp\": \"refs/heads/main@{#9128}\", \
 \"got_webkit_revision_git\": \"44bf01091874592828070dc26cbb5189da9b959b\", \
 \"append_deps_patch_sha\": true, \
 \"project\": \"\", \
 \"got_webkit_revision\": 194864, \
-\"slavename\": \"build74-m4\", \
-\"got_revision_cp\": \"refs/heads/master@{#328178}\", \
+\"subordinatename\": \"build74-m4\", \
+\"got_revision_cp\": \"refs/heads/main@{#328178}\", \
 \"blamelist\": [], \
 \"branch\": \"\", \
 \"revision\": \"\", \
-\"workdir\": \"/b/build/slave/linux_perf_bisector\", \
+\"workdir\": \"/b/build/subordinate/linux_perf_bisector\", \
 \"repository\": \"\", \
 \"buildername\": \"linux_perf_bisector\", \
 \"got_webrtc_revision\": \"0d778c6af22767e9bcc92a278da08b5f82885977\", \
-\"mastername\": \"tryserver.chromium.perf\", \
+\"mainname\": \"tryserver.chromium.perf\", \
 \"got_v8_revision\": \"a06f1b4e013812cc7ad1d52a0ea49206cafa7b67\", \
 \"got_v8_revision_cp\": \"refs/heads/4.4.50@{#1}\", \
 \"buildbotURL\": \"http://build.chromium.org/p/tryserver.chromium.perf/\", \
@@ -58,7 +58,7 @@ rasterize_and_record_micro.key_mobile_sites_smooth\", \
 \"test_type\": \"perf\", \
 \"gs_bucket\": \"chrome-perf\", \
 \"bad_revision\": \"328115\"}, \
-\"got_webkit_revision_cp\": \"refs/heads/master@{#194864}\", \
+\"got_webkit_revision_cp\": \"refs/heads/main@{#194864}\", \
 \"buildnumber\": 32, \
 \"requestedAt\": 1430771180}}",
   "status_changed_ts": "1430771433288620",

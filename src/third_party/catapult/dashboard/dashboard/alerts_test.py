@@ -105,7 +105,7 @@ class AlertsTest(testing_common.TestCase):
       self.assertEqual(expected_end_rev, alert['end_revision'])
       self.assertEqual(expected_end_rev - 5, alert['start_revision'])
       self.assertEqual(key_map[expected_end_rev], alert['key'])
-      self.assertEqual('ChromiumGPU', alert['master'])
+      self.assertEqual('ChromiumGPU', alert['main'])
       self.assertEqual('linux-release', alert['bot'])
       self.assertEqual('scrolling-benchmark', alert['testsuite'])
       if expected_end_rev % 20 == 0:

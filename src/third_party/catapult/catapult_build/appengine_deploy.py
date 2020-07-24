@@ -42,7 +42,7 @@ def AppcfgUpdate(paths, app_id):
 
 
 def _VersionName():
-  is_synced = not _Run(['git', 'diff', 'master']).strip()
+  is_synced = not _Run(['git', 'diff', 'main']).strip()
   deployment_type = 'clean' if is_synced else 'dev'
   email = _Run(['git', 'config', '--get', 'user.email'])
   username = email[0:email.find('@')]

@@ -103,8 +103,8 @@ class StatsHandler(request_handler.RequestHandler):
 
   def _DisplayForm(self):
     """Displays a form for requesting a set of statistics."""
-    master = ndb.Key('Master', 'ChromiumPerf')
-    bots = graph_data.Bot.query(ancestor=master).fetch(keys_only=True)
+    main = ndb.Key('Main', 'ChromiumPerf')
+    bots = graph_data.Bot.query(ancestor=main).fetch(keys_only=True)
     bots = [b.string_id() for b in bots]
     sheriffs = sheriff.Sheriff.query().fetch(keys_only=True)
     sheriffs = [s.string_id() for s in sheriffs]
@@ -240,9 +240,9 @@ class StatsHandler(request_handler.RequestHandler):
   def _StartGeneratingStatsAroundRevision(self, stat_container):
     """Adds tasks for generating around_revision stats to the task queue.
 
-    Note: Master and sheriff are hard-coded below. If we want to use this
-    to generate stats about other masters or sheriffs, we should:
-      1. Make master and sheriff specified by parameters.
+    Note: Main and sheriff are hard-coded below. If we want to use this
+    to generate stats about other mains or sheriffs, we should:
+      1. Make main and sheriff specified by parameters.
       2. Add fields on the form to specify these parameters.
 
     Args:

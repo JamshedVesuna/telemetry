@@ -22,7 +22,7 @@ class EmailTemplateTest(unittest.TestCase):
         'ABC/bot-name/abc-perf-test/passed%', '1415919839',
         add_protocol_and_host=False)
 
-    self.assertEquals(('/report?masters=ABC&bots=bot-name&tests='
+    self.assertEquals(('/report?mains=ABC&bots=bot-name&tests='
                        'abc-perf-test%2Fpassed%25&checked=passed%25%2C'
                        'passed%25_ref%2Cref&rev=1415919839'),
                       actual_output_no_host)

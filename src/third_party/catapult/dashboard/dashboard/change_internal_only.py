@@ -30,20 +30,20 @@ class ChangeInternalOnlyHandler(request_handler.RequestHandler):
 
   def get(self):
     """Renders the UI for selecting bots."""
-    masters = {}
+    mains = {}
     bots = graph_data.Bot.query().fetch()
     for bot in bots:
-      master_name = bot.key.parent().string_id()
+      main_name = bot.key.parent().string_id()
       bot_name = bot.key.string_id()
-      bots = masters.setdefault(master_name, [])
+      bots = mains.setdefault(main_name, [])
       bots.append({
           'name': bot_name,
           'internal_only': bot.internal_only,
       })
-    logging.info('MASTERS: %s', masters)
+    logging.info('MASTERS: %s', mains)
 
     self.RenderHtml('change_internal_only.html', {
-        'masters': masters,
+        'mains': mains,
     })
 
   def post(self):
@@ -56,7 +56,7 @@ class ChangeInternalOnlyHandler(request_handler.RequestHandler):
     Request parameters:
       internal_only: "true" if turning on internal_only, else "false".
       bots: Bots to update. Multiple bots parameters are possible; the value
-          of each should be a string like "MasterName/platform-name".
+          of each should be a string like "MainName/platform-name".
       test: An urlsafe Key for a Test entity.
       cursor: An urlsafe Cursor; this parameter is only given if we're part-way
           through processing a Bot or a Test.
@@ -107,8 +107,8 @@ class ChangeInternalOnlyHandler(request_handler.RequestHandler):
 
   def _UpdateBot(self, bot_name, internal_only, cursor=None):
     """Start updating internal_only for the given bot and associated data."""
-    master, bot = bot_name.split('/')
-    bot_key = ndb.Key('Master', master, 'Bot', bot)
+    main, bot = bot_name.split('/')
+    bot_key = ndb.Key('Main', main, 'Bot', bot)
 
     if not cursor:
       # First time updating for this Bot.

@@ -220,7 +220,7 @@ class PossibleTrybotBrowser(possible_browser.PossibleBrowser):
 
     # Make sure the tree does have local commits.
     returncode, out, err = self._RunProcess(
-        ['git', 'log', 'origin/master..HEAD'])
+        ['git', 'log', 'origin/main..HEAD'])
     if not out:
       return NO_CHANGES
 
@@ -234,7 +234,7 @@ class PossibleTrybotBrowser(possible_browser.PossibleBrowser):
       return ERROR
     try:
       returncode, out, err = self._RunProcess(
-          ['git', 'branch', '--set-upstream-to', 'origin/master'])
+          ['git', 'branch', '--set-upstream-to', 'origin/main'])
       if returncode:
         logging.error('Error in git branch --set-upstream-to: %s', err)
         return ERROR

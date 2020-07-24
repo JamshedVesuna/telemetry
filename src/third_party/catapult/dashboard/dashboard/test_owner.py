@@ -6,8 +6,8 @@
 
 We want to allow editing test ownership through incoming chart metadata as well
 as through dashboard UI, so we keep track of changes in test ownership that come
-in from incoming chart metadata and apply them to a master copy of the test
-owners data.  The dashboard UI, on the other hand, can modify the master copy
+in from incoming chart metadata and apply them to a main copy of the test
+owners data.  The dashboard UI, on the other hand, can modify the main copy
 directly.
 
 Test owners data are stored in layered_cache as dictionary of test suite path to
@@ -22,7 +22,7 @@ from dashboard import layered_cache
 
 # Cache keys for layered cache test owner dictionary.
 _CHARTJSON_OWNER_CACHE_KEY = 'ChartjsonOwner'
-_MASTER_OWNER_CACHE_KEY = 'MasterOwner'
+_MASTER_OWNER_CACHE_KEY = 'MainOwner'
 
 _MAX_TEST_SUITE_PATH_LENGTH = 500
 _MAX_OWNER_EMAIL_LENGTH = 254
@@ -32,10 +32,10 @@ def UpdateOwnerFromChartjson(owner_dict):
   """Updates test owners with test owner data from chartjson.
 
   Checks if tests owners have changed by matching |owner_dict| with the stored
-  owner dict for chartjson and update the master owner dict accordingly.
+  owner dict for chartjson and update the main owner dict accordingly.
 
   Args:
-    owner_dict: A dictionary of Master/Test suite to set of owners.
+    owner_dict: A dictionary of Main/Test suite to set of owners.
   """
   add_owner_dict = {}
   remove_owner_dict = {}
@@ -71,15 +71,15 @@ def AddOwner(test_suite_path, owner_email):
   """Adds an owner for a test suite path.
 
   Args:
-    test_suite_path: A string of "Master/Test suite".
+    test_suite_path: A string of "Main/Test suite".
     owner_email: An email string.
   """
-  owner_dict_cache = GetMasterCachedOwner()
+  owner_dict_cache = GetMainCachedOwner()
   owners = owner_dict_cache.get(test_suite_path, set())
   owners.add(owner_email)
   owner_dict_cache[test_suite_path] = owners
   layered_cache.SetExternal(_MASTER_OWNER_CACHE_KEY, owner_dict_cache)
-  owner_dict_cache = GetMasterCachedOwner()
+  owner_dict_cache = GetMainCachedOwner()
 
 
 def AddOwnerFromDict(owner_dict):
@@ -103,9 +103,9 @@ def AddOwnerFromDict(owner_dict):
     }
 
   Args:
-    owner_dict: A dictionary of "Master/Test suite" to set of owners' email.
+    owner_dict: A dictionary of "Main/Test suite" to set of owners' email.
   """
-  owner_dict_cache = GetMasterCachedOwner()
+  owner_dict_cache = GetMainCachedOwner()
   for path, owners in owner_dict.iteritems():
     owners_cache = owner_dict_cache.get(path, set())
     owners_cache.update(owners)
@@ -117,11 +117,11 @@ def RemoveOwner(test_suite_path, owner_email=None):
   """Removes test owners for |test_suite_path|.
 
   Args:
-    test_suite_path: A string of "Master/Test suite".
+    test_suite_path: A string of "Main/Test suite".
     owner_email: Optional email string.  If not specified, dict entry
         for |test_suite_path| will be deleted.
   """
-  owner_dict_cache = GetMasterCachedOwner()
+  owner_dict_cache = GetMainCachedOwner()
   if test_suite_path in owner_dict_cache:
     if owner_email:
       owners = owner_dict_cache[test_suite_path]
@@ -137,10 +137,10 @@ def RemoveOwnerFromDict(owner_dict):
   """Adds test owner from |owner_dict| to owner dict in layered_cache.
 
   Args:
-    owner_dict: A dictionary of Master/Test suite to set of owners to be
+    owner_dict: A dictionary of Main/Test suite to set of owners to be
         removed.
   """
-  owner_dict_cache = GetMasterCachedOwner()
+  owner_dict_cache = GetMainCachedOwner()
   for path, owners in owner_dict.iteritems():
     owners_cache = owner_dict_cache.get(path, set())
     owner_dict_cache[path] = owners_cache - owners
@@ -152,7 +152,7 @@ def RemoveOwnerFromDict(owner_dict):
 def GetOwners(test_suite_paths):
   """Gets a list of owners for a list of test suite paths."""
   owners = set()
-  owner_dict_cache = GetMasterCachedOwner()
+  owner_dict_cache = GetMainCachedOwner()
   for path in test_suite_paths:
     if path in owner_dict_cache:
       owners.update(owner_dict_cache[path])
@@ -162,14 +162,14 @@ def GetOwners(test_suite_paths):
 def GetTestSuitePaths(owner_email):
   """Gets a list of test suite paths for an owner."""
   test_suite_paths = []
-  owner_dict_cache = GetMasterCachedOwner()
+  owner_dict_cache = GetMainCachedOwner()
   for path, owners in owner_dict_cache.iteritems():
     if owner_email in owners:
       test_suite_paths.append(path)
   return sorted(test_suite_paths)
 
 
-def GetMasterCachedOwner():
+def GetMainCachedOwner():
   """Gets test owner cached dictionary from layered_cache."""
   return layered_cache.GetExternal(_MASTER_OWNER_CACHE_KEY) or {}
 

@@ -68,7 +68,7 @@ class BuildbucketServiceTest(testing_common.TestCase):
 
     # Ensure the request was composed
     request = self.fake_service.bodies[0]
-    self.assertEqual('master.tryserver.chromium.perf', request['bucket'])
+    self.assertEqual('main.tryserver.chromium.perf', request['bucket'])
     parameters_json = request['parameters_json']
     parameters = json.loads(parameters_json)
     self.assertIsInstance(parameters, dict)

@@ -212,8 +212,8 @@ def _GetOldStdioUri(row, test):
   Returns:
     An URI string, or None if none can be made.
   """
-  # A masterid and buildname are required to construct a valid URI.
-  if (not hasattr(test, 'masterid') or not hasattr(test, 'buildername')
+  # A mainid and buildname are required to construct a valid URI.
+  if (not hasattr(test, 'mainid') or not hasattr(test, 'buildername')
       or not hasattr(row, 'buildnumber')):
     return None
 
@@ -222,7 +222,7 @@ def _GetOldStdioUri(row, test):
     return None
   return '%s/%s/builders/%s/builds/%s/steps/%s/logs/stdio' % (
       buildbot_uri_prefix,
-      urllib.quote(test.masterid),
+      urllib.quote(test.mainid),
       urllib.quote(test.buildername),
       urllib.quote(str(getattr(row, 'buildnumber'))),
       urllib.quote(test.suite_name))

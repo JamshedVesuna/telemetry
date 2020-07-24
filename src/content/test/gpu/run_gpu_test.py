@@ -39,8 +39,8 @@ def _LaunchDBus():
 
   # Only start DBus on systems that are actually running X. Using DISPLAY
   # variable is not reliable, because is it set by the /etc/init.d/buildbot
-  # script for all slaves.
-  # TODO(sergiyb): When all GPU slaves are migrated to swarming, we can remove
+  # script for all subordinates.
+  # TODO(sergiyb): When all GPU subordinates are migrated to swarming, we can remove
   # assignment of the DISPLAY from /etc/init.d/buildbot because this hack was
   # used to run GPU tests on buildbot. After it is removed, we can use DISPLAY
   # variable here to check if we are running X.

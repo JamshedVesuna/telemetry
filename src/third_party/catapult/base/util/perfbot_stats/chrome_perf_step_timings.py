@@ -23,7 +23,7 @@ from dateutil import parser as dateparser
 from datetime import datetime, timedelta
 
 BUILDER_STEPS_URL = ('https://chrome-infra-stats.appspot.com/_ah/api/stats/v1/'
-                     'masters/chromium.perf/%s')
+                     'mains/chromium.perf/%s')
 
 STEP_ACTIVE_URL = ('https://chrome-infra-stats.appspot.com/_ah/api/stats/v1/'
                    'steps/last/chromium.perf/%s/%s/1')

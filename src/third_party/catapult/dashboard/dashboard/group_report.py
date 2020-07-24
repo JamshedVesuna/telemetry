@@ -190,7 +190,7 @@ def _GetSubTestsForAlerts(alert_list):
   """Gets subtest dict for list of alerts."""
   subtests = {}
   for alert in alert_list:
-    bot_name = alert['master'] + '/' + alert['bot']
+    bot_name = alert['main'] + '/' + alert['bot']
     testsuite = alert['testsuite']
     if bot_name not in subtests:
       subtests[bot_name] = {}
@@ -218,7 +218,7 @@ def _GetOverlaps(anomalies, start, end):
 def _GetOwnerInfo(alert_dicts):
   """Gets a list of owner info for list of alerts for bug with bisect result.
 
-  Test owners are retrieved by a set of master and test suite name from each
+  Test owners are retrieved by a set of main and test suite name from each
   alert in alert_dicts.
 
   Args:
@@ -227,7 +227,7 @@ def _GetOwnerInfo(alert_dicts):
   Returns:
     A list of dictionary containing owner information.
   """
-  test_suite_paths = {'%s/%s' % (a['master'], a['testsuite'])
+  test_suite_paths = {'%s/%s' % (a['main'], a['testsuite'])
                       for a in alert_dicts}
   owners = test_owner.GetOwners(test_suite_paths)
   return [{'email': owner} for owner in owners]

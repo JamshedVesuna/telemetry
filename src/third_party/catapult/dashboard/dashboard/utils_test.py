@@ -54,7 +54,7 @@ class UtilsTest(testing_common.TestCase):
         'ChromiumPerf/cros-*/dromaeo.*/Total')
     self._AssertDoesntMatch(
         'ChromiumPerf/cros-one/dromaeo.top25/Total',
-        'OtherMaster/cros-*/dromaeo.*/Total')
+        'OtherMain/cros-*/dromaeo.*/Total')
 
   def testMatchesPattern_MorePartialWildcards(self):
     # Note that the wildcard matches zero or more characters.
@@ -78,8 +78,8 @@ class UtilsTest(testing_common.TestCase):
 
   def _PutEntitiesAllExternal(self):
     """Puts entities (none internal-only) and returns the keys."""
-    master = graph_data.Master(id='M').put()
-    bot = graph_data.Bot(parent=master, id='b').put()
+    main = graph_data.Main(id='M').put()
+    bot = graph_data.Bot(parent=main, id='b').put()
     keys = [
         graph_data.Test(id='a', parent=bot, internal_only=False).put(),
         graph_data.Test(id='b', parent=bot, internal_only=False).put(),
@@ -90,8 +90,8 @@ class UtilsTest(testing_common.TestCase):
 
   def _PutEntitiesHalfInternal(self):
     """Puts entities (half internal-only) and returns the keys."""
-    master = graph_data.Master(id='M').put()
-    bot = graph_data.Bot(parent=master, id='b').put()
+    main = graph_data.Main(id='M').put()
+    bot = graph_data.Bot(parent=main, id='b').put()
     keys = [
         graph_data.Test(id='ax', parent=bot, internal_only=True).put(),
         graph_data.Test(id='a', parent=bot, internal_only=False).put(),
@@ -120,11 +120,11 @@ class UtilsTest(testing_common.TestCase):
     self.assertEqual(len(keys), len(utils.GetMulti(keys)))
 
   def testTestSuiteName_Basic(self):
-    key = utils.TestKey('Master/bot/suite-foo/sub/x/y/z')
+    key = utils.TestKey('Main/bot/suite-foo/sub/x/y/z')
     self.assertEqual('suite-foo', utils.TestSuiteName(key))
 
   def testTestSuiteName_KeyNotLongEnough_ReturnsNone(self):
-    key = ndb.Key('Master', 'M', 'Bot', 'b')
+    key = ndb.Key('Main', 'M', 'Bot', 'b')
     self.assertIsNone(utils.TestSuiteName(key))
 
   def testMinimumRange_Empty_ReturnsNone(self):

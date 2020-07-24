@@ -171,7 +171,7 @@ def _MakeBisectTryJob(bug_id, run_count=0):
 
   metric = start_try_job.GuessMetric(test.test_path)
 
-  bisect_bot = start_try_job.GuessBisectBot(test.master_name, test.bot_name)
+  bisect_bot = start_try_job.GuessBisectBot(test.main_name, test.bot_name)
   if not bisect_bot or '_' not in bisect_bot:
     raise NotBisectableError('Could not select a bisect bot.')
 
@@ -179,7 +179,7 @@ def _MakeBisectTryJob(bug_id, run_count=0):
 
   new_bisect_config = start_try_job.GetBisectConfig(
       bisect_bot=bisect_bot,
-      master_name=test.master_name,
+      main_name=test.main_name,
       suite=test.suite_name,
       metric=metric,
       good_revision=good_revision,
@@ -199,7 +199,7 @@ def _MakeBisectTryJob(bug_id, run_count=0):
       bot=bisect_bot,
       config=config_python_string,
       bug_id=bug_id,
-      master_name=test.master_name,
+      main_name=test.main_name,
       internal_only=test.internal_only,
       job_type='bisect',
       use_buildbucket=use_recipe)

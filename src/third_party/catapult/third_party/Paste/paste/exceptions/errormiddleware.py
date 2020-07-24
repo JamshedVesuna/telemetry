@@ -103,7 +103,7 @@ class ErrorMiddleware(object):
         if error_email is None:
             error_email = (global_conf.get('error_email')
                            or global_conf.get('admin_email')
-                           or global_conf.get('webmaster_email')
+                           or global_conf.get('webmain_email')
                            or global_conf.get('sysadmin_email'))
         self.error_email = converters.aslist(error_email)
         self.error_log = error_log

@@ -31,7 +31,7 @@ class DebugAlertHandler(request_handler.RequestHandler):
     """Displays UI for debugging the anomaly detection function.
 
     Request parameters:
-      test_path: Full test path (Master/bot/suite/chart) for test with alert.
+      test_path: Full test path (Main/bot/suite/chart) for test with alert.
       rev: A revision (Row id number) to center the graph on.
       num_before: Maximum number of points after the given revision to get.
       num_after: Maximum number of points before the given revision.
@@ -316,7 +316,7 @@ def _CsvUrl(test_path, rows):
 def _GraphUrl(test, revision):
   """Constructs an URL for requesting data from /graph_csv for |rows|."""
   params = [
-      ('masters', test.master_name),
+      ('mains', test.main_name),
       ('bots', test.bot_name),
       ('tests', '/'.join(test.test_path.split('/')[2:])),
   ]

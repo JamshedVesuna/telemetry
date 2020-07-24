@@ -92,7 +92,7 @@ def TestKey(test_path):
   path_parts = test_path.split('/')
   if path_parts is None:
     return None
-  key_list = [('Master', path_parts[0])]
+  key_list = [('Main', path_parts[0])]
   if len(path_parts) > 1:
     key_list += [('Bot', path_parts[1])]
   if len(path_parts) > 2:
