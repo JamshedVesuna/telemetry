@@ -13,7 +13,7 @@ commit positions as x-values, but want to keep all of the existing data
 there, in order.
 
 Therefore, we want to change all revision numbers of points under the
-ChromiumWebRTC and ChromiumWebRTCFYI masters to use modified x-values.
+ChromiumWebRTC and ChromiumWebRTCFYI mains to use modified x-values.
 
 TODO(qyearsley): Remove this handler (and its related entries in BUILD and
 dispatcher.py) when http://crbug.com/496048 (and http://crbug.com/469523)

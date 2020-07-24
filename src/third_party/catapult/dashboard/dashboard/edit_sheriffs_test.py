@@ -33,8 +33,8 @@ class EditSheriffsTest(testing_common.TestCase):
 
   def _AddSampleTestData(self):
     """Adds some sample data used in the tests below."""
-    master = graph_data.Master(id='TheMaster').put()
-    bot = graph_data.Bot(id='TheBot', parent=master).put()
+    main = graph_data.Main(id='TheMain').put()
+    bot = graph_data.Bot(id='TheBot', parent=main).put()
     suite1 = graph_data.Test(id='Suite1', parent=bot).put()
     suite2 = graph_data.Test(id='Suite2', parent=bot).put()
     graph_data.Test(id='aaa', parent=suite1, has_rows=True).put()
@@ -90,10 +90,10 @@ class EditSheriffsTest(testing_common.TestCase):
     # After the tasks get executed, the Test entities should also be updated.
     self.ExecuteTaskQueueTasks(
         '/put_entities_task', edit_config_handler._TASK_QUEUE_NAME)
-    aaa = utils.TestKey('TheMaster/TheBot/Suite1/aaa').get()
-    bbb = utils.TestKey('TheMaster/TheBot/Suite1/bbb').get()
-    ccc = utils.TestKey('TheMaster/TheBot/Suite2/ccc').get()
-    ddd = utils.TestKey('TheMaster/TheBot/Suite2/ddd').get()
+    aaa = utils.TestKey('TheMain/TheBot/Suite1/aaa').get()
+    bbb = utils.TestKey('TheMain/TheBot/Suite1/bbb').get()
+    ccc = utils.TestKey('TheMain/TheBot/Suite2/ccc').get()
+    ddd = utils.TestKey('TheMain/TheBot/Suite2/ddd').get()
     self.assertEqual(sheriff_entity.key, aaa.sheriff)
     self.assertEqual(sheriff_entity.key, bbb.sheriff)
     self.assertIsNone(ccc.sheriff)
@@ -114,10 +114,10 @@ class EditSheriffsTest(testing_common.TestCase):
     # After the tasks get executed, the Test entities should also be updated.
     self.ExecuteTaskQueueTasks(
         '/put_entities_task', edit_config_handler._TASK_QUEUE_NAME)
-    aaa = utils.TestKey('TheMaster/TheBot/Suite1/aaa').get()
-    bbb = utils.TestKey('TheMaster/TheBot/Suite1/bbb').get()
-    ccc = utils.TestKey('TheMaster/TheBot/Suite2/ccc').get()
-    ddd = utils.TestKey('TheMaster/TheBot/Suite2/ddd').get()
+    aaa = utils.TestKey('TheMain/TheBot/Suite1/aaa').get()
+    bbb = utils.TestKey('TheMain/TheBot/Suite1/bbb').get()
+    ccc = utils.TestKey('TheMain/TheBot/Suite2/ccc').get()
+    ddd = utils.TestKey('TheMain/TheBot/Suite2/ddd').get()
     self.assertIsNone(aaa.sheriff)
     self.assertIsNone(bbb.sheriff)
     self.assertEqual(sheriff_entity.key, ccc.sheriff)

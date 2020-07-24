@@ -25,8 +25,8 @@ class ListMonitoredTestsTest(testing_common.TestCase):
 
   def _AddSampleTestData(self):
     """Adds some sample data used in the tests below."""
-    master = graph_data.Master(id='TheMaster').put()
-    bot = graph_data.Bot(id='TheBot', parent=master).put()
+    main = graph_data.Main(id='TheMain').put()
+    bot = graph_data.Bot(id='TheBot', parent=main).put()
     suite1 = graph_data.Test(id='Suite1', parent=bot).put()
     suite2 = graph_data.Test(id='Suite2', parent=bot).put()
     graph_data.Test(id='aaa', parent=suite1, has_rows=True).put()
@@ -47,7 +47,7 @@ class ListMonitoredTestsTest(testing_common.TestCase):
     response = self.testapp.get(
         '/list_monitored_tests', {'get-sheriffed-by': 'X'})
     self.assertEqual(
-        ['TheMaster/TheBot/Suite1/aaa', 'TheMaster/TheBot/Suite1/bbb'],
+        ['TheMain/TheBot/Suite1/aaa', 'TheMain/TheBot/Suite1/bbb'],
         json.loads(response.body))
 
   def testGet_NoParameterGiven_ReturnsError(self):

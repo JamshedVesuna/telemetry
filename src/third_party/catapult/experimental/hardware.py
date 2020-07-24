@@ -3,7 +3,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-"""Query build slave hardware info, and print it to stdout as csv."""
+"""Query build subordinate hardware info, and print it to stdout as csv."""
 
 import csv
 import json
@@ -18,7 +18,7 @@ _MASTERS = [
 
 
 _KEYS = [
-    'master', 'builder', 'hostname',
+    'main', 'builder', 'hostname',
 
     'os family', 'os version',
 
@@ -44,20 +44,20 @@ def main():
   writer = csv.DictWriter(sys.stdout, _KEYS)
   writer.writeheader()
 
-  for master_name in _MASTERS:
-    master_data = json.load(urllib2.urlopen(
-      'http://build.chromium.org/p/%s/json/slaves' % master_name))
+  for main_name in _MASTERS:
+    main_data = json.load(urllib2.urlopen(
+      'http://build.chromium.org/p/%s/json/subordinates' % main_name))
 
-    slaves = sorted(master_data.iteritems(), key=lambda x: x[1]['builders'])
-    for slave_name, slave_data in slaves:
-      for builder_name in slave_data['builders']:
+    subordinates = sorted(main_data.iteritems(), key=lambda x: x[1]['builders'])
+    for subordinate_name, subordinate_data in subordinates:
+      for builder_name in subordinate_data['builders']:
         row = {
-            'master': master_name,
+            'main': main_name,
             'builder': builder_name,
-            'hostname': slave_name,
+            'hostname': subordinate_name,
         }
 
-        host_data = slave_data['host']
+        host_data = subordinate_data['host']
         if host_data:
           host_data = host_data.splitlines()
           if len(host_data) > 1:
@@ -71,7 +71,7 @@ def main():
                 continue
               row[key] = value
 
-        if 'product name' not in row and slave_name.startswith('slave'):
+        if 'product name' not in row and subordinate_name.startswith('subordinate'):
           row['product name'] = 'Google Compute Engine'
 
         writer.writerow(row)

@@ -31,15 +31,15 @@ class DumpGraphJsonTest(testing_common.TestCase):
     testing_common.AddTests('M', 'b', {'foo': {}})
 
     # When a request is made for this one test, three entities should
-    # be returned: the Master, Bot and Test entities.
+    # be returned: the Main, Bot and Test entities.
     response = self.testapp.get('/dump_graph_json', {'test_path': 'M/b/foo'})
     protobuf_strings = json.loads(response.body)
     entities = map(dump_graph_json.BinaryProtobufToEntity, protobuf_strings)
     self.assertEqual(3, len(entities))
-    masters = _EntitiesOfKind(entities, 'Master')
+    mains = _EntitiesOfKind(entities, 'Main')
     bots = _EntitiesOfKind(entities, 'Bot')
     tests = _EntitiesOfKind(entities, 'Test')
-    self.assertEqual('M', masters[0].key.string_id())
+    self.assertEqual('M', mains[0].key.string_id())
     self.assertEqual('b', bots[0].key.string_id())
     self.assertEqual('foo', tests[0].key.string_id())
 

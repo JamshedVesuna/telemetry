@@ -169,5 +169,5 @@ def _GetTestSuiteFromKey(test_key):
 def GetBotNamesFromAlerts(alerts):
   """Gets a set with the names of the bots related to some alerts."""
   # a.test is a ndb.Key object, and a.test.flat() should return a list like
-  # ['Master', master name, 'Bot', bot name, 'Test', test suite name, ...]
+  # ['Main', main name, 'Bot', bot name, 'Test', test suite name, ...]
   return {a.test.flat()[3] for a in alerts}

@@ -606,9 +606,9 @@ class TestModuleGraph (unittest.TestCase):
         script = os.path.join(os.path.dirname(TESTDATA), 'script')
 
         graph = modulegraph.ModuleGraph()
-        master = graph.createNode(modulegraph.Node, 'root')
-        m = graph.run_script(script, master)
-        self.assertEqual(list(graph.get_edges(master)[0])[0], m)
+        main = graph.createNode(modulegraph.Node, 'root')
+        m = graph.run_script(script, main)
+        self.assertEqual(list(graph.get_edges(main)[0])[0], m)
         self.assertEqual(set(graph.get_edges(m)[0]), set([
             graph.findNode('sys'),
             graph.findNode('os'),

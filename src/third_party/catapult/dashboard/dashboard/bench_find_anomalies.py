@@ -311,8 +311,8 @@ def _ExtraAlertLinks(bench, change_points_as_lists):
 def _GraphLink(test_key, rev):
   """Returns an HTML link to view the graph for an alert."""
   test_path = utils.TestPath(test_key)
-  master, bot, test = test_path.split('/', 2)
-  query = '?masters=%s&bots=%s&tests=%s&rev=%s' % (master, bot, test, rev)
+  main, bot, test = test_path.split('/', 2)
+  query = '?mains=%s&bots=%s&tests=%s&rev=%s' % (main, bot, test, rev)
   return '<a href="https://%s/report%s">%s/%s@%s</a>' % (
       app_identity.get_default_version_hostname(), query, bot, test, rev)
 

@@ -183,7 +183,7 @@ Bisect job ran on: win_perf_bisect
 Completed 1/2 builds.
 Run time: 724/720 minutes.
 Bisect timed out! Try again with a smaller revision range.
-Failed steps: slave_steps, Working on def
+Failed steps: subordinate_steps, Working on def
 
 ===== PARTIAL RESULTS =====
 Depot Commit SHA Mean Std. Error State
@@ -376,7 +376,7 @@ def _MockFetch(url=None):
               'steps': [{'name': 'Working on abc', 'results': [0]},
                         {'name': 'Working on def', 'results': [2]}],
               'times': [1411501756.293642, 1411545237.89049],
-              'text': ['failed', 'slave_steps', 'failed', 'Working on def']})
+              'text': ['failed', 'subordinate_steps', 'failed', 'Working on def']})
       ],
       'http://build.chromium.org/bb1234567/steps/Results/logs/stdio/text': [
           200, _BISECT_LOG_SINGLE_OWNER
@@ -387,7 +387,7 @@ def _MockFetch(url=None):
               'steps': [{'name': 'Working on abc', 'results': [0]},
                         {'name': 'Working on def', 'results': [2]}],
               'times': [1411501756.293642, 1411545237.89049],
-              'text': ['failed', 'slave_steps', 'failed', 'Working on def']})
+              'text': ['failed', 'subordinate_steps', 'failed', 'Working on def']})
       ],
       ('http://build.chromium.org/builders/bb66666'
        '/steps/Results/logs/stdio/text'): [
@@ -884,7 +884,7 @@ class UpdateBugWithResultsTest(testing_common.TestCase):
     bug_id = 516
     build_data = {
         'steps': [{'name': 'A', 'results': [0]},
-                  {'name': 'slave_steps', 'results': [2]}],
+                  {'name': 'subordinate_steps', 'results': [2]}],
         'times': [1411500000, 1411501000],
     }
     build_url = 'http://build.chromium.org/builders/516'

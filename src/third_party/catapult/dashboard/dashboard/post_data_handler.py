@@ -11,7 +11,7 @@ from dashboard import utils
 
 
 class PostDataHandler(request_handler.RequestHandler):
-  """Helper class to handle common functionality for dealing with slaves."""
+  """Helper class to handle common functionality for dealing with subordinates."""
 
   def post(self):
     """Checks the IP of the request against the white list.

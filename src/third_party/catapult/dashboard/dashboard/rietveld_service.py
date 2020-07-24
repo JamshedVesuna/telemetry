@@ -231,14 +231,14 @@ class RietveldService(object):
       return (None, None)
     return issue_id, patchset_id
 
-  def TryPatch(self, tryserver_master, issue_id, patchset_id, bot):
+  def TryPatch(self, tryserver_main, issue_id, patchset_id, bot):
     """Sends a request to try the given patchset on the given trybot.
 
     To see exactly how this request is handled, you can see the try_patchset
     handler in the Chromium branch of Rietveld: http://goo.gl/U6tJQZ
 
     Args:
-      tryserver_master: Master name, e.g. "tryserver.chromium.perf".
+      tryserver_main: Main name, e.g. "tryserver.chromium.perf".
       issue_id: Rietveld issue ID.
       patchset_id: Patchset ID (returned when a patch is uploaded).
       bot: Bisect bot name.
@@ -249,7 +249,7 @@ class RietveldService(object):
     args = {
         'xsrf_token': self._XsrfToken(),
         'builders': json.dumps({bot: ['defaulttests']}),
-        'master': tryserver_master,
+        'main': tryserver_main,
         'reason': 'Perf bisect',
         'clobber': 'False',
     }

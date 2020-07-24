@@ -28,7 +28,7 @@ class ReportTest(testing_common.TestCase):
   def _AddTestSuites(self):
     """Adds sample data and sets the list of test suites."""
     # Mock out some data for a test.
-    masters = [
+    mains = [
         'ChromiumPerf',
         'ChromiumGPU',
     ]
@@ -47,11 +47,11 @@ class ReportTest(testing_common.TestCase):
         },
         'dromaeo': {},
     }
-    testing_common.AddTests(masters, bots, tests)
-    for m in masters:
+    testing_common.AddTests(mains, bots, tests)
+    for m in mains:
       for b in bots:
         for t in tests:
-          t = ndb.Key('Master', m, 'Bot', b, 'Test', t).get()
+          t = ndb.Key('Main', m, 'Bot', b, 'Test', t).get()
           t.description = 'This should show up'
           t.put()
 
@@ -109,7 +109,7 @@ class ReportTest(testing_common.TestCase):
 
     response = self.testapp.get(
         '/report'
-        '?masters=ChromiumGPU&bots=linux,win'
+        '?mains=ChromiumGPU&bots=linux,win'
         '&tests=scrolling/num_layers,scrolling/num_layers/about.com'
         '&checked=num_layers')
 
@@ -125,7 +125,7 @@ class ReportTest(testing_common.TestCase):
   def testGet_OldUriMissingTestParam(self):
     response = self.testapp.get(
         '/report'
-        '?masters=ChromiumGPU&bots=linux,win'
+        '?mains=ChromiumGPU&bots=linux,win'
         '&checked=num_layers')
 
     location = response.headers.get('location')
@@ -150,7 +150,7 @@ class ReportTest(testing_common.TestCase):
 
     response = self.testapp.get(
         '/report'
-        '?masters=ChromiumGPU&bots=linux-release'
+        '?mains=ChromiumGPU&bots=linux-release'
         '&tests=scrolling_benchmark')
 
     # We expect to get a URL redirect with an sid.
@@ -165,7 +165,7 @@ class ReportTest(testing_common.TestCase):
   def testGet_OldUriWithRevisionParams(self):
     response = self.testapp.get(
         '/report'
-        '?masters=ChromiumGPU&bots=linux,win'
+        '?mains=ChromiumGPU&bots=linux,win'
         '&tests=scrolling/num_layers,scrolling/num_layers/about.com'
         '&checked=num_layers&start_rev=1234&end_rev=5678')
     location = response.headers.get('location')

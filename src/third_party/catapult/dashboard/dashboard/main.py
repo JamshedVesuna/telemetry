@@ -132,7 +132,7 @@ def _AnomalyInfoDicts(anomalies, tests):
         'bug_id': anomaly_entity.bug_id or '',
         'start_revision': anomaly_entity.start_revision,
         'end_revision': anomaly_entity.end_revision,
-        'master': test.master_name,
+        'main': test.main_name,
         'bot': test.bot_name,
         'testsuite': test.suite_name,
         'test': subtest_path,

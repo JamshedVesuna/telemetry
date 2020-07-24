@@ -282,11 +282,11 @@ class TrybotBrowserFinderTest(unittest.TestCase):
         (['git', 'rev-parse', '--abbrev-ref', 'HEAD'], (0, 'br', None)),
         (['git', 'update-index', '--refresh', '-q'], (0, None, None,)),
         (['git', 'diff-index', 'HEAD'], (0, '', None)),
-        (['git', 'log', 'origin/master..HEAD'], (0, '', None)),
+        (['git', 'log', 'origin/main..HEAD'], (0, '', None)),
         (['git', 'rev-parse', '--abbrev-ref', 'HEAD'], (0, 'br', None)),
         (['git', 'update-index', '--refresh', '-q'], (0, None, None,)),
         (['git', 'diff-index', 'HEAD'], (0, '', None)),
-        (['git', 'log', 'origin/master..HEAD'], (0, '', None)),
+        (['git', 'log', 'origin/main..HEAD'], (0, '', None)),
     ))
 
     browser.RunRemote()
@@ -306,7 +306,7 @@ class TrybotBrowserFinderTest(unittest.TestCase):
         (['git', 'rev-parse', '--abbrev-ref', 'HEAD'], (0, 'br', None)),
         (['git', 'update-index', '--refresh', '-q'], (0, None, None,)),
         (['git', 'diff-index', 'HEAD'], (0, '', None)),
-        (['git', 'log', 'origin/master..HEAD'], (0, 'logs here', None)),
+        (['git', 'log', 'origin/main..HEAD'], (0, 'logs here', None)),
         (['git', 'checkout', '-b', 'telemetry-tryjob'],
          (1, None, 'fatal: A branch named \'telemetry-try\' already exists.')),
     ))
@@ -330,15 +330,15 @@ class TrybotBrowserFinderTest(unittest.TestCase):
           (['git', 'rev-parse', '--abbrev-ref', 'HEAD'], (0, 'br', None)),
           (['git', 'update-index', '--refresh', '-q'], (0, None, None,)),
           (['git', 'diff-index', 'HEAD'], (0, '', None)),
-          (['git', 'log', 'origin/master..HEAD'], (0, '', None))
+          (['git', 'log', 'origin/main..HEAD'], (0, '', None))
       )
     self._ExpectProcesses(first_processes + (
         (['git', 'rev-parse', '--abbrev-ref', 'HEAD'], (0, branch, None)),
         (['git', 'update-index', '--refresh', '-q'], (0, None, None,)),
         (['git', 'diff-index', 'HEAD'], (0, '', None)),
-        (['git', 'log', 'origin/master..HEAD'], (0, 'logs here', None)),
+        (['git', 'log', 'origin/main..HEAD'], (0, 'logs here', None)),
         (['git', 'checkout', '-b', 'telemetry-tryjob'], (0, None, None)),
-        (['git', 'branch', '--set-upstream-to', 'origin/master'],
+        (['git', 'branch', '--set-upstream-to', 'origin/main'],
          (0, None, None)),
         (['git', 'commit', '-a', '-m', 'bisect config: %s' % platform],
          (0, None, None)),

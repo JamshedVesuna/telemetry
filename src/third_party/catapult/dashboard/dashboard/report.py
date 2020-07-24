@@ -44,18 +44,18 @@ class ReportHandler(chart_handler.ChartHandler):
     Returns:
       A query string if request parameters are from old URI, otherwise None.
     """
-    masters = self.request.get('masters')
+    mains = self.request.get('mains')
     bots = self.request.get('bots')
     tests = self.request.get('tests')
     checked = self.request.get('checked')
 
-    if not (masters and bots and tests):
+    if not (mains and bots and tests):
       return None
 
     # Page state is a list of chart state.  Chart state is
     # a list of pair of test path and selected series which is used
     # to generate a chart on /report page.
-    state = _CreatePageState(masters, bots, tests, checked)
+    state = _CreatePageState(mains, bots, tests, checked)
 
     # Replace default separators to remove whitespace.
     state_json = json.dumps(state, separators=(',', ':'))
@@ -75,15 +75,15 @@ class ReportHandler(chart_handler.ChartHandler):
     return query_string
 
 
-def _CreatePageState(masters, bots, tests, checked):
+def _CreatePageState(mains, bots, tests, checked):
   """Creates a page state dictionary for old URI parameters.
 
-  Based on original /report page, each combination of masters, bots, and
+  Based on original /report page, each combination of mains, bots, and
   tests is a chart; therefor we create a list of chart states for those
   combinations.
 
   Args:
-    masters: A string with comma separated list of masters.
+    mains: A string with comma separated list of mains.
     bots: A string with comma separated list of bots.
     tests: A string with comma separated list of tests.
     checked: A string with comma separated list of checked series.
@@ -98,21 +98,21 @@ def _CreatePageState(masters, bots, tests, checked):
     else:
       selected_series = checked.split(',')
 
-  masters = masters.split(',')
+  mains = mains.split(',')
   bots = bots.split(',')
   tests = tests.split(',')
   test_paths = []
-  for master in masters:
+  for main in mains:
     for bot in bots:
       for test in tests:
         test_parts = test.split('/')
         if len(test_parts) == 1:
-          first_test = _GetFirstTest(test, master + '/' + bot)
+          first_test = _GetFirstTest(test, main + '/' + bot)
           if first_test:
             test += '/' + first_test
             if not selected_series:
               selected_series.append(first_test)
-        test_paths.append(master + '/' + bot + '/' + test)
+        test_paths.append(main + '/' + bot + '/' + test)
 
   chart_states = []
   for path in test_paths:
@@ -128,7 +128,7 @@ def _GetFirstTest(test_suite, bot_path):
 
   Args:
     test_suite: Test suite name.
-    bot_path: Master and bot name separated by a slash.
+    bot_path: Main and bot name separated by a slash.
 
   Returns:
     The first test that has rows, otherwise returns None.

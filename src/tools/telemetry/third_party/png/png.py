@@ -50,7 +50,7 @@
 # http://trac.browsershots.org/browser/trunk/pypng/lib/png.py?rev=2885
 
 # Incorporated into pypng by drj on 2009-03-12 from
-# //depot/prj/bangaio/master/code/png.py#67
+# //depot/prj/bangaio/main/code/png.py#67
 
 
 """

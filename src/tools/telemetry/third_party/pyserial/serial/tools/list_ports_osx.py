@@ -28,7 +28,7 @@ import re
 iokit = ctypes.cdll.LoadLibrary(ctypes.util.find_library('IOKit'))
 cf = ctypes.cdll.LoadLibrary(ctypes.util.find_library('CoreFoundation'))
 
-kIOMasterPortDefault = ctypes.c_void_p.in_dll(iokit, "kIOMasterPortDefault")
+kIOMainPortDefault = ctypes.c_void_p.in_dll(iokit, "kIOMainPortDefault")
 kCFAllocatorDefault = ctypes.c_void_p.in_dll(cf, "kCFAllocatorDefault")
 
 kCFStringEncodingMacRoman = 0
@@ -155,7 +155,7 @@ def GetIOServicesByType(service_type):
     serial_port_iterator = ctypes.c_void_p()
 
     response = iokit.IOServiceGetMatchingServices(
-        kIOMasterPortDefault,
+        kIOMainPortDefault,
         iokit.IOServiceMatching(service_type),
         ctypes.byref(serial_port_iterator)
     )

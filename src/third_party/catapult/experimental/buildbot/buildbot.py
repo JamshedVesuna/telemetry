@@ -30,8 +30,8 @@ StackTraceLine = collections.namedtuple(
     'StackTraceLine', ('file', 'function', 'line', 'source'))
 
 
-def _FetchData(master, url):
-  url = '%s/%s/json/%s' % (BASE_URL, master, url)
+def _FetchData(main, url):
+  url = '%s/%s/json/%s' % (BASE_URL, main, url)
   try:
     logging.info('Retrieving ' + url)
     return json.load(urllib2.urlopen(url))
@@ -47,14 +47,14 @@ def _FetchData(master, url):
     raise
 
 
-def Builders(master):
+def Builders(main):
   builders = {}
 
   # Load builders from cache file.
-  if os.path.exists(master):
+  if os.path.exists(main):
     start_time = time.time()
-    for builder_name in os.listdir(master):
-      cache_file_path = os.path.join(master, builder_name, CACHE_FILE_NAME)
+    for builder_name in os.listdir(main):
+      cache_file_path = os.path.join(main, builder_name, CACHE_FILE_NAME)
       if os.path.exists(cache_file_path):
         with open(cache_file_path, 'rb') as cache_file:
           try:
@@ -68,21 +68,21 @@ def Builders(master):
   return builders
 
 
-def Update(master, builders):
+def Update(main, builders):
   # Update builders with latest information.
-  builder_data = _FetchData(master, 'builders')
+  builder_data = _FetchData(main, 'builders')
   for builder_name, builder_info in builder_data.iteritems():
     if builder_name in builders:
       builders[builder_name].Update(builder_info)
     else:
-      builders[builder_name] = Builder(master, builder_name, builder_info)
+      builders[builder_name] = Builder(main, builder_name, builder_info)
 
   return builders
 
 
 class Builder(object):
-  def __init__(self, master, name, data):
-    self._master = master
+  def __init__(self, main, name, data):
+    self._main = main
     self._name = name
 
     self.Update(data)
@@ -127,9 +127,9 @@ class Builder(object):
     build_query = urllib.urlencode(
         [('select', build) for build in build_numbers])
     url = 'builders/%s/builds/?%s' % (urllib.quote(self.name), build_query)
-    builds = _FetchData(self.master, url)
+    builds = _FetchData(self.main, url)
     for build_info in builds.itervalues():
-      self._builds[build_info['number']] = Build(self.master, build_info)
+      self._builds[build_info['number']] = Build(self.main, build_info)
 
     self._Cache()
 
@@ -141,17 +141,17 @@ class Builder(object):
 
   def Update(self, data=None):
     if not data:
-      data = _FetchData(self.master, 'builders/%s' % urllib.quote(self.name))
+      data = _FetchData(self.main, 'builders/%s' % urllib.quote(self.name))
     self._state = data['state']
     self._pending_build_count = data['pendingBuilds']
     self._current_builds = tuple(data['currentBuilds'])
     self._cached_builds = tuple(data['cachedBuilds'])
-    self._slaves = tuple(data['slaves'])
+    self._subordinates = tuple(data['subordinates'])
 
     self._Cache()
 
   def _Cache(self):
-    cache_dir_path = os.path.join(self.master, self.name)
+    cache_dir_path = os.path.join(self.main, self.name)
     if not os.path.exists(cache_dir_path):
       os.makedirs(cache_dir_path)
     cache_file_path = os.path.join(cache_dir_path, CACHE_FILE_NAME)
@@ -164,8 +164,8 @@ class Builder(object):
       yield self._builds[build_number]
 
   @property
-  def master(self):
-    return self._master
+  def main(self):
+    return self._main
 
   @property
   def name(self):
@@ -183,12 +183,12 @@ class Builder(object):
   def current_builds(self):
     """List of build numbers currently building.
 
-    There may be multiple entries if there are multiple build slaves."""
+    There may be multiple entries if there are multiple build subordinates."""
     return self._current_builds
 
   @property
   def cached_builds(self):
-    """Builds whose data are visible on the master in increasing order.
+    """Builds whose data are visible on the main in increasing order.
 
     More builds may be available than this."""
     return self._cached_builds
@@ -202,20 +202,20 @@ class Builder(object):
     return None
 
   @property
-  def slaves(self):
-    return self._slaves
+  def subordinates(self):
+    return self._subordinates
 
 
 class Build(object):
-  def __init__(self, master, data):
-    self._master = master
+  def __init__(self, main, data):
+    self._main = main
     self._builder_name = data['builderName']
     self._number = data['number']
     self._complete = not ('currentStep' in data and data['currentStep'])
     self._start_time, self._end_time = data['times']
 
     self._steps = {step_info['name']:
-        Step(self._master, self._builder_name, self._number, step_info)
+        Step(self._main, self._builder_name, self._number, step_info)
         for step_info in data['steps']}
 
   def __str__(self):
@@ -286,8 +286,8 @@ def _ParseTraceFromLog(log):
 
 
 class Step(object):
-  def __init__(self, master, builder_name, build_number, data):
-    self._master = master
+  def __init__(self, main, builder_name, build_number, data):
+    self._main = main
     self._builder_name = builder_name
     self._build_number = build_number
     self._name = data['name']
@@ -308,7 +308,7 @@ class Step(object):
 
   def __getstate__(self):
     return {
-      '_master': self._master,
+      '_main': self._main,
       '_builder_name': self._builder_name,
       '_build_number': self._build_number,
       '_name': self._name,
@@ -358,7 +358,7 @@ class Step(object):
       if not self.log_link:
         return None
       cache_file_path = os.path.join(
-          self._master, self._builder_name,
+          self._main, self._builder_name,
           str(self._build_number), self._name, 'log')
       if os.path.exists(cache_file_path):
         # Load cache file, if it exists.
@@ -394,7 +394,7 @@ class Step(object):
       if not self.results_link:
         return None
       cache_file_path = os.path.join(
-          self._master, self._builder_name,
+          self._main, self._builder_name,
           str(self._build_number), self._name, 'results')
       if os.path.exists(cache_file_path):
         # Load cache file, if it exists.

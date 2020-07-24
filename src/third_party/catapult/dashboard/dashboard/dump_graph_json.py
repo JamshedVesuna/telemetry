@@ -41,13 +41,13 @@ class DumpGraphJsonHandler(request_handler.RequestHandler):
     """Dumps data for the requested test.
 
     Request parameters:
-      test_path: A single full test path, including master/bot.
+      test_path: A single full test path, including main/bot.
       num_points: Max number of Row entities (optional).
       end_rev: Ending revision number, inclusive (optional).
 
     Outputs:
       JSON array of encoded protobuf messages, which encode all of
-      the datastore entities relating to one test (including Master, Bot,
+      the datastore entities relating to one test (including Main, Bot,
       Test, Row, Anomaly and Sheriff entities).
     """
     test_path = self.request.get('test_path')
@@ -90,7 +90,7 @@ class DumpGraphJsonHandler(request_handler.RequestHandler):
 
     Outputs:
       JSON array of encoded protobuf messages, which encode all of
-      the datastore entities relating to one test (including Master, Bot,
+      the datastore entities relating to one test (including Main, Bot,
       Test, Row, Anomaly and Sheriff entities).
     """
     sheriff_name = self.request.get('sheriff')
@@ -121,7 +121,7 @@ class DumpGraphJsonHandler(request_handler.RequestHandler):
     self.response.out.write(json.dumps(protobuf_strings))
 
   def _GetTestAncestors(self, test_keys):
-    """Get the Test, Bot, and Master entities that are ancestors of test."""
+    """Get the Test, Bot, and Main entities that are ancestors of test."""
     entities = []
     added_parents = set()
     for test_key in test_keys:

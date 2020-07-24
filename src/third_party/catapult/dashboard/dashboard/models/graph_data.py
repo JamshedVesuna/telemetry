@@ -6,13 +6,13 @@
 
 The Chromium project uses Buildbot to run its performance tests, and the
 structure of the data for the Performance Dashboard reflects this. Metadata
-about tests are structured in a hierarchy of Master, Bot, and Test entities.
-Master and Bot entities represent Buildbot masters and builders respectively,
+about tests are structured in a hierarchy of Main, Bot, and Test entities.
+Main and Bot entities represent Buildbot mains and builders respectively,
 and Test entities represent groups of results, or individual data series.
 
 For example, entities might be structured as follows:
 
-  Master: ChromiumPerf
+  Main: ChromiumPerf
     Bot: win7
       Test: page_cycler.moz
         Test: times
@@ -76,22 +76,22 @@ LIST_TESTS_SUBTEST_CACHE_KEY = 'list_tests_get_tests_new_%s_%s_%s'
 _MAX_STRING_LENGTH = 500
 
 
-class Master(internal_only_model.InternalOnlyModel):
-  """Information about the Buildbot master.
+class Main(internal_only_model.InternalOnlyModel):
+  """Information about the Buildbot main.
 
-  Masters are keyed by name, e.g. 'ChromiumGPU' or 'ChromiumPerf'.
-  All Bot entities that are Buildbot slaves of one master are children of one
-  Master entity in the datastore.
+  Mains are keyed by name, e.g. 'ChromiumGPU' or 'ChromiumPerf'.
+  All Bot entities that are Buildbot subordinates of one main are children of one
+  Main entity in the datastore.
   """
-  # Master has no properties; the name of the master is the ID.
+  # Main has no properties; the name of the main is the ID.
 
 
 class Bot(internal_only_model.InternalOnlyModel):
-  """Information about a Buildbot slave that runs perf tests.
+  """Information about a Buildbot subordinate that runs perf tests.
 
   Bots are keyed by name, e.g. 'xp-release-dual-core'. A Bot entity contains
   information about whether the tests are only viewable to internal users, and
-  each bot has a parent that is a Master entity. A Bot is be the ancestor of
+  each bot has a parent that is a Main entity. A Bot is be the ancestor of
   the Test entities that run on it.
   """
   internal_only = ndb.BooleanProperty(default=False, indexed=True)
@@ -186,11 +186,11 @@ class Test(internal_only_model.CreateHookInternalOnlyModel):
 
   @property
   def test_path(self):
-    """Slash-separated list of key parts, 'master/bot/suite/chart/...'."""
+    """Slash-separated list of key parts, 'main/bot/suite/chart/...'."""
     return utils.TestPath(self.key)
 
   @ndb.ComputedProperty
-  def master_name(self):
+  def main_name(self):
     return self.key.pairs()[0][1]
 
   @ndb.ComputedProperty
@@ -230,7 +230,7 @@ class Test(internal_only_model.CreateHookInternalOnlyModel):
     return self.key.pairs()[6][0]
 
   @classmethod
-  def _GetMasterBotSuite(cls, key):
+  def _GetMainBotSuite(cls, key):
     while key and key.parent():
       if key.parent().kind() == 'Bot':
         if not key.parent().parent():
@@ -295,14 +295,14 @@ class Test(internal_only_model.CreateHookInternalOnlyModel):
     """Called when the entity is first saved."""
     if self.key.parent().kind() != 'Bot':
       layered_cache.Delete(
-          LIST_TESTS_SUBTEST_CACHE_KEY % self._GetMasterBotSuite(self.key))
+          LIST_TESTS_SUBTEST_CACHE_KEY % self._GetMainBotSuite(self.key))
 
   @classmethod
   # pylint: disable=unused-argument
   def _pre_delete_hook(cls, key):
     if key.parent() and key.parent().kind() != 'Bot':
       layered_cache.Delete(
-          LIST_TESTS_SUBTEST_CACHE_KEY % Test._GetMasterBotSuite(key))
+          LIST_TESTS_SUBTEST_CACHE_KEY % Test._GetMainBotSuite(key))
 
 
 class LastAddedRevision(ndb.Model):

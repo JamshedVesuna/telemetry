@@ -94,13 +94,13 @@ class CrOSInterface(object):
                       '-o KbdInteractiveAuthentication=no',
                       '-o PreferredAuthentications=publickey',
                       '-o UserKnownHostsFile=/dev/null',
-                      '-o ControlMaster=no']
+                      '-o ControlMain=no']
 
     if ssh_identity:
       self._ssh_identity = os.path.abspath(os.path.expanduser(ssh_identity))
       os.chmod(self._ssh_identity, stat.S_IREAD)
 
-    # Establish master SSH connection using ControlPersist.
+    # Establish main SSH connection using ControlPersist.
     # Since only one test will be run on a remote host at a time,
     # the control socket filename can be telemetry@hostname.
     self._ssh_control_file = '/tmp/' + 'telemetry' + '@' + hostname

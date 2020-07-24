@@ -20,7 +20,7 @@ _SINGLE_EMAIL_SUBJECT = (
 _EMAIL_HTML_TABLE = """
 A <b>%(percent_changed)s</b> %(change_type)s.<br>
 <table cellpadding='4'>
-  <tr><td>Master:</td><td><b>%(master)s</b></td>
+  <tr><td>Main:</td><td><b>%(main)s</b></td>
   <tr><td>Bot:</td><td><b>%(bot)s</b></td>
   <tr><td>Test:</td><td><b>%(test_name)s</b></td>
   <tr><td>Revision Range:</td><td><b>%(start)d - %(end)d</b></td>
@@ -33,7 +33,7 @@ and <a href='%(bug_url)s'>file a bug</a>.<br>
 _SUMMARY_EMAIL_TEXT_BODY = """
 A %(percent_changed)s %(change_type)s:
 
-Master: %(master)s
+Main: %(main)s
 Bot: %(bot)s
 Test: %(test_name)s
 Revision Range:%(start)d - %(end)d
@@ -229,7 +229,7 @@ def GetReportPageLink(test_path, rev=None, add_protocol_and_host=True):
   path_parts = test_path.split('/')
   if len(path_parts) < 4:
     logging.error('Could not make link, invalid test path: %s', test_path)
-  master, bot = path_parts[0], path_parts[1]
+  main, bot = path_parts[0], path_parts[1]
   test_name = '/'.join(path_parts[2:])
   trace_name = path_parts[-1]
   trace_names = ','.join([trace_name, trace_name + '_ref', 'ref'])
@@ -238,7 +238,7 @@ def GetReportPageLink(test_path, rev=None, add_protocol_and_host=True):
   else:
     link_template = '/report?%s'
   uri = link_template % urllib.urlencode([
-      ('masters', master),
+      ('mains', main),
       ('bots', bot),
       ('tests', test_name),
       ('checked', trace_names),
@@ -274,7 +274,7 @@ def GetAlertInfo(alert, test):
   change_type = 'improvement' if alert.is_improvement else 'regression'
   test_name = '/'.join(test.test_path.split('/')[2:])
   sheriff_name = alert.sheriff.string_id()
-  master = test.master_name
+  main = test.main_name
   bot = test.bot_name
 
   graph_url = GetGroupReportPageLink(alert)
@@ -283,7 +283,7 @@ def GetAlertInfo(alert, test):
   interpolation_parameters = {
       'percent_changed': percent_changed,
       'change_type': change_type,
-      'master': master,
+      'main': main,
       'bot': bot,
       'test_name': test_name,
       'sheriff_name': sheriff_name,

@@ -34,7 +34,7 @@ class GraphRevisionsHandler(request_handler.RequestHandler):
     """Fetches a list of revisions and values for a given test.
 
     Request parameters:
-      test_path: Full test path (including master/bot) for one Test entity.
+      test_path: Full test path (including main/bot) for one Test entity.
 
     Outputs:
       A JSON list of 3-item lists [revision, value, timestamp].

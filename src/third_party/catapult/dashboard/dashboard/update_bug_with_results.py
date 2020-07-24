@@ -417,7 +417,7 @@ def _GetBotFailureInfo(build_data):
 
   # Add failed steps message.
   # 'text' field has the following properties:
-  #   text":["failed","slave_steps","failed","Working on [b92af3931458f2]"]
+  #   text":["failed","subordinate_steps","failed","Working on [b92af3931458f2]"]
   status_list = build_data['text']
   if status_list[0] == 'failed':
     message += 'Failed steps: %s\n\n' % ', '.join(status_list[1::2])
@@ -652,8 +652,8 @@ def _CheckBisectBotForInfraFailure(bug_id, build_data, build_url):
   build_steps = build_data['steps']
 
   # If there's no bisect scripts step then it is considered infra issue.
-  slave_step_index = _GetBisectScriptStepIndex(build_steps)
-  if not slave_step_index:
+  subordinate_step_index = _GetBisectScriptStepIndex(build_steps)
+  if not subordinate_step_index:
     _LogBisectInfraFailure(bug_id, 'Bot failure.', build_url)
     return
 
@@ -672,9 +672,9 @@ def _CheckBisectBotForInfraFailure(bug_id, build_data, build_url):
       'Failed to sync',
       'Failed to run [gclient runhooks]',
   ]
-  slave_step = build_steps[slave_step_index]
+  subordinate_step = build_steps[subordinate_step_index]
   stdio_url = ('%s/steps/%s/logs/stdio/text' %
-               (build_url, urllib.quote(slave_step['name'])))
+               (build_url, urllib.quote(subordinate_step['name'])))
   response = _FetchURL(stdio_url)
   if response:
     for flag in build_failure_flags:
@@ -687,7 +687,7 @@ def _GetBisectScriptStepIndex(build_steps):
   """Gets the index of step that run bisect script in build step data."""
   index = 0
   for step in build_steps:
-    if step['name'] in ['slave_steps', 'Running Bisection']:
+    if step['name'] in ['subordinate_steps', 'Running Bisection']:
       return index
     index += 1
   return None
